@@ -17,6 +17,7 @@ final class TrackViewController: UIViewController {
     // MARK: Subviews
     private let trackTimeBar = UISlider()
     private let trackStateButton = UIButton()
+    private let trackSpeedBar = UISlider()
     
     // MARK: Initializers
     init?(
@@ -47,7 +48,12 @@ final class TrackViewController: UIViewController {
 
 private extension TrackViewController {
     // MARK: User Interactivity
+    @objc func changeTrackSpeed() {
+        player.rate = trackSpeedBar.value
+    }
+    
     @objc func changeTrackState() {
+        player.enableRate = true
         if player.prepareToPlay() {
             player.play()
         }
@@ -63,7 +69,11 @@ private extension TrackViewController {
             trackStateButton.topAnchor.constraint(equalTo: trackTimeBar.bottomAnchor, constant: 10),
             trackStateButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             trackStateButton.widthAnchor.constraint(equalToConstant: 100),
-            trackTimeBar.heightAnchor.constraint(equalToConstant: 40)
+            trackTimeBar.heightAnchor.constraint(equalToConstant: 40),
+            
+            trackSpeedBar.topAnchor.constraint(equalTo: trackStateButton.bottomAnchor, constant: 10),
+            trackSpeedBar.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            trackSpeedBar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
         ])
     }
     
@@ -71,6 +81,7 @@ private extension TrackViewController {
     func setup() {
         setupTrackTimeBar()
         setupTrackStateButton()
+        setupTrackSpeedBar()
     }
     
     func setupTrackTimeBar() {
@@ -84,5 +95,15 @@ private extension TrackViewController {
         
         trackStateButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(trackStateButton)
+    }
+    
+    func setupTrackSpeedBar() {
+        trackSpeedBar.minimumValue = 0.5
+        trackSpeedBar.maximumValue = 2.0
+        trackSpeedBar.value = 1.0
+        trackSpeedBar.addTarget(self, action: #selector(changeTrackSpeed), for: .valueChanged)
+        
+        trackSpeedBar.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(trackSpeedBar)
     }
 }
