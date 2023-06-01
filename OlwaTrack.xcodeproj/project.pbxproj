@@ -13,6 +13,7 @@
 		70F4C0172A2824F4004FDC5A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 70F4C0162A2824F4004FDC5A /* Assets.xcassets */; };
 		70F4C01A2A2824F4004FDC5A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 70F4C0182A2824F4004FDC5A /* LaunchScreen.storyboard */; };
 		70F4C0222A2826F6004FDC5A /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F4C0212A2826F6004FDC5A /* MainViewController.swift */; };
+		70F4C0242A282A2B004FDC5A /* FileObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F4C0232A282A2B004FDC5A /* FileObject.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +25,7 @@
 		70F4C0192A2824F4004FDC5A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		70F4C01B2A2824F4004FDC5A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		70F4C0212A2826F6004FDC5A /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
+		70F4C0232A282A2B004FDC5A /* FileObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileObject.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,6 +61,7 @@
 				70F4C00D2A2824F3004FDC5A /* AppDelegate.swift */,
 				70F4C00F2A2824F3004FDC5A /* SceneDelegate.swift */,
 				70F4C0212A2826F6004FDC5A /* MainViewController.swift */,
+				70F4C0232A282A2B004FDC5A /* FileObject.swift */,
 				70F4C0112A2824F3004FDC5A /* ViewController.swift */,
 				70F4C0162A2824F4004FDC5A /* Assets.xcassets */,
 				70F4C0182A2824F4004FDC5A /* LaunchScreen.storyboard */,
@@ -141,6 +144,7 @@
 				70F4C00E2A2824F3004FDC5A /* AppDelegate.swift in Sources */,
 				70F4C0102A2824F3004FDC5A /* SceneDelegate.swift in Sources */,
 				70F4C0222A2826F6004FDC5A /* MainViewController.swift in Sources */,
+				70F4C0242A282A2B004FDC5A /* FileObject.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
