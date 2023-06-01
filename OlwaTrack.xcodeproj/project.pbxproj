@@ -14,6 +14,8 @@
 		70F4C01A2A2824F4004FDC5A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 70F4C0182A2824F4004FDC5A /* LaunchScreen.storyboard */; };
 		70F4C0222A2826F6004FDC5A /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F4C0212A2826F6004FDC5A /* MainViewController.swift */; };
 		70F4C0242A282A2B004FDC5A /* FileObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F4C0232A282A2B004FDC5A /* FileObject.swift */; };
+		70F4C0262A283E90004FDC5A /* TrackViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F4C0252A283E90004FDC5A /* TrackViewController.swift */; };
+		70F4C0292A28441C004FDC5A /* AVFAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70F4C0282A28441C004FDC5A /* AVFAudio.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +28,8 @@
 		70F4C01B2A2824F4004FDC5A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		70F4C0212A2826F6004FDC5A /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		70F4C0232A282A2B004FDC5A /* FileObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileObject.swift; sourceTree = "<group>"; };
+		70F4C0252A283E90004FDC5A /* TrackViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackViewController.swift; sourceTree = "<group>"; };
+		70F4C0282A28441C004FDC5A /* AVFAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFAudio.framework; path = System/Library/Frameworks/AVFAudio.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -33,6 +37,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				70F4C0292A28441C004FDC5A /* AVFAudio.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -44,6 +49,7 @@
 			children = (
 				70F4C00C2A2824F3004FDC5A /* OlwaTrack */,
 				70F4C00B2A2824F3004FDC5A /* Products */,
+				70F4C0272A28441C004FDC5A /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -61,6 +67,7 @@
 				70F4C00D2A2824F3004FDC5A /* AppDelegate.swift */,
 				70F4C00F2A2824F3004FDC5A /* SceneDelegate.swift */,
 				70F4C0212A2826F6004FDC5A /* MainViewController.swift */,
+				70F4C0252A283E90004FDC5A /* TrackViewController.swift */,
 				70F4C0232A282A2B004FDC5A /* FileObject.swift */,
 				70F4C0112A2824F3004FDC5A /* ViewController.swift */,
 				70F4C0162A2824F4004FDC5A /* Assets.xcassets */,
@@ -68,6 +75,14 @@
 				70F4C01B2A2824F4004FDC5A /* Info.plist */,
 			);
 			path = OlwaTrack;
+			sourceTree = "<group>";
+		};
+		70F4C0272A28441C004FDC5A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				70F4C0282A28441C004FDC5A /* AVFAudio.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -144,6 +159,7 @@
 				70F4C00E2A2824F3004FDC5A /* AppDelegate.swift in Sources */,
 				70F4C0102A2824F3004FDC5A /* SceneDelegate.swift in Sources */,
 				70F4C0222A2826F6004FDC5A /* MainViewController.swift in Sources */,
+				70F4C0262A283E90004FDC5A /* TrackViewController.swift in Sources */,
 				70F4C0242A282A2B004FDC5A /* FileObject.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

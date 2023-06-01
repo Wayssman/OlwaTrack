@@ -13,7 +13,7 @@ final class MainViewController: UIViewController {
     ]
     
     // MARK: Subviews
-    private let trackPicker = UIDocumentPickerViewController(documentTypes: ["public.mp3", "public.midi", "public.mp3"], in: .open)
+    private let trackPicker = UIDocumentPickerViewController(documentTypes: ["public.mp3", "public.midi", "public.mp3"], in: .import)
     private let trackList = UITableView()
     
     // MARK: Initializers
@@ -21,6 +21,7 @@ final class MainViewController: UIViewController {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
         
         trackList.dataSource = self
+        trackList.delegate = self
     }
     
     required init?(coder: NSCoder) {
@@ -35,6 +36,7 @@ final class MainViewController: UIViewController {
     }
 }
 
+// MARK: - UIDocumentPickerDelegate
 extension MainViewController: UIDocumentPickerDelegate {
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         guard let fileUrl = urls.first else {
@@ -50,6 +52,7 @@ extension MainViewController: UIDocumentPickerDelegate {
     }
 }
 
+// MARK: - UITableViewDataSource
 extension MainViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return model.count
@@ -59,6 +62,17 @@ extension MainViewController: UITableViewDataSource {
         let cell = UITableViewCell()
         cell.textLabel?.text = model[indexPath.row].title
         return cell
+    }
+}
+
+// MARK: - UITableViewDelegate
+extension MainViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let url = model[indexPath.row].path
+        
+        if let controller = TrackViewController(trackUrl: url) {
+            navigationController?.pushViewController(controller, animated: true)
+        }
     }
 }
 
