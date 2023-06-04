@@ -11,8 +11,13 @@ import Foundation
 
 final class TrackViewController: UIViewController {
     // MARK: Properties
-    private let player: AVAudioPlayer
-    private let trackUrl: URL
+    //private let player: AVAudioPlayer
+    //private let trackUrl: URL
+    private let sourceFile: AVAudioFile
+    private let format: AVAudioFormat
+    private let engine = AVAudioEngine()
+    private let player = AVAudioPlayerNode()
+    private let speed = AVAudioUnitVarispeed()
     
     // MARK: Subviews
     private let trackTimeBar = UISlider()
@@ -23,12 +28,11 @@ final class TrackViewController: UIViewController {
     init?(
         trackUrl: URL
     ) {
-        self.trackUrl = trackUrl
         do {
-            self.player = try AVAudioPlayer(contentsOf: trackUrl)
+            sourceFile = try AVAudioFile(forReading: trackUrl)
+            format = sourceFile.processingFormat
         } catch {
-            print(error)
-            return nil
+            fatalError("1")
         }
         super.init(nibName: nil, bundle: nil)
     }
@@ -43,20 +47,38 @@ final class TrackViewController: UIViewController {
         
         setup()
         layout()
+        
+        engine.attach(player)
+        engine.attach(speed)
+        
+        speed.rate = 1
+        
+        engine.connect(player, to: speed, format: format)
+        engine.connect(speed, to: engine.mainMixerNode, format: format)
+        
+        player.scheduleFile(sourceFile, at: nil)
+        
+        do {
+            try engine.start()
+            player.play()
+        } catch {
+            fatalError("2")
+        }
     }
 }
 
 private extension TrackViewController {
     // MARK: User Interactivity
     @objc func changeTrackSpeed() {
-        player.rate = trackSpeedBar.value
+        //player.rate = trackSpeedBar.value
+        speed.rate = trackSpeedBar.value
     }
     
     @objc func changeTrackState() {
-        player.enableRate = true
+        /*player.enableRate = true
         if player.prepareToPlay() {
             player.play()
-        }
+        }*/
     }
     
     // MARK: Layout
