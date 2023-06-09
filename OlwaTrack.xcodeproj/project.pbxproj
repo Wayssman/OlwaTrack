@@ -16,6 +16,7 @@
 		70F4C0242A282A2B004FDC5A /* FileObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F4C0232A282A2B004FDC5A /* FileObject.swift */; };
 		70F4C0262A283E90004FDC5A /* TrackViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F4C0252A283E90004FDC5A /* TrackViewController.swift */; };
 		70F4C0292A28441C004FDC5A /* AVFAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70F4C0282A28441C004FDC5A /* AVFAudio.framework */; };
+		70FC27252A333D3B00A6122B /* TrackEditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70FC27242A333D3B00A6122B /* TrackEditViewController.swift */; };
 		70FF75732A2CD5B100558DD0 /* ImportedTracksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70FF75722A2CD5B100558DD0 /* ImportedTracksViewController.swift */; };
 		70FF75762A2CD7B100558DD0 /* OTActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70FF75752A2CD7B100558DD0 /* OTActionButton.swift */; };
 		70FF75792A2CD89500558DD0 /* UIView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70FF75782A2CD89500558DD0 /* UIView+Extensions.swift */; };
@@ -38,6 +39,7 @@
 		70F4C0232A282A2B004FDC5A /* FileObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileObject.swift; sourceTree = "<group>"; };
 		70F4C0252A283E90004FDC5A /* TrackViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackViewController.swift; sourceTree = "<group>"; };
 		70F4C0282A28441C004FDC5A /* AVFAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFAudio.framework; path = System/Library/Frameworks/AVFAudio.framework; sourceTree = SDKROOT; };
+		70FC27242A333D3B00A6122B /* TrackEditViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackEditViewController.swift; sourceTree = "<group>"; };
 		70FF75722A2CD5B100558DD0 /* ImportedTracksViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportedTracksViewController.swift; sourceTree = "<group>"; };
 		70FF75752A2CD7B100558DD0 /* OTActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTActionButton.swift; sourceTree = "<group>"; };
 		70FF75782A2CD89500558DD0 /* UIView+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Extensions.swift"; sourceTree = "<group>"; };
@@ -117,6 +119,7 @@
 		70FF75712A2CCD4200558DD0 /* TrackEditModule */ = {
 			isa = PBXGroup;
 			children = (
+				70FC27242A333D3B00A6122B /* TrackEditViewController.swift */,
 			);
 			path = TrackEditModule;
 			sourceTree = "<group>";
@@ -233,6 +236,7 @@
 				70FF75842A2D078700558DD0 /* ImportedTracksCollectionCell.swift in Sources */,
 				70FF757D2A2CD92F00558DD0 /* UIButton+Extensions.swift in Sources */,
 				70F4C0242A282A2B004FDC5A /* FileObject.swift in Sources */,
+				70FC27252A333D3B00A6122B /* TrackEditViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
