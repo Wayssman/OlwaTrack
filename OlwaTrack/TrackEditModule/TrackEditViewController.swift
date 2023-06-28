@@ -11,7 +11,7 @@ final class TrackEditViewController: UIViewController {
     // MARK: Subviews
     private let exportButton = UIButton()
     private let timelineContainer = UIView()
-    private let timeline = UIView()
+    private let timeline = TrackTimelineControl()
     private let leftTimeLabel = UILabel()
     private let remainTimeLabel = UILabel()
     private let trackTitleLabel = UILabel()
@@ -21,13 +21,23 @@ final class TrackEditViewController: UIViewController {
     private let nextButton = UIButton()
     private let mixingContainer = UIView()
     private let trackSpeedLabel = UILabel()
-    private let trackSpeedBar = UIView()
+    private let trackSpeedBar = OTOptionControl()
+    
+    private var timer: Timer?
+    var progress: CGFloat = 0
     
     // MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setup()
+        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { timer in
+            self.progress += (10 / 100)
+            if self.progress >= 1 {
+                self.progress = 0
+            }
+            self.timeline.configure(progress: self.progress)
+        })
     }
 }
 
@@ -48,10 +58,21 @@ private extension TrackEditViewController {
         
         view.addSubview(timelineContainer)
         NSLayoutConstraint.activate([
-            timelineContainer.topAnchor.constraint(equalTo: view.topAnchor, constant: 157),
+            timelineContainer.topAnchor.constraint(equalTo: view.topAnchor, constant: 100),
             timelineContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30),
             timelineContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30),
             timelineContainer.heightAnchor.constraint(equalTo: timelineContainer.widthAnchor)
+        ])
+        
+        // Timeline
+        timeline.translatesAutoresizingMaskIntoConstraints = false
+        
+        timelineContainer.addSubview(timeline)
+        NSLayoutConstraint.activate([
+            timeline.topAnchor.constraint(equalTo: timelineContainer.topAnchor, constant: 20),
+            timeline.leadingAnchor.constraint(equalTo: timelineContainer.leadingAnchor, constant: 20),
+            timeline.trailingAnchor.constraint(equalTo: timelineContainer.trailingAnchor, constant: -20),
+            timeline.bottomAnchor.constraint(equalTo: timelineContainer.bottomAnchor, constant: -20)
         ])
         
         // Left Time Label
@@ -194,6 +215,18 @@ private extension TrackEditViewController {
             trackSpeedLabel.topAnchor.constraint(equalTo: mixingContainer.topAnchor, constant: 15),
             trackSpeedLabel.leadingAnchor.constraint(equalTo: mixingContainer.leadingAnchor, constant: 16),
             trackSpeedLabel.trailingAnchor.constraint(equalTo: mixingContainer.trailingAnchor, constant: -16)
+        ])
+        
+        // Track Speed Bar
+        //trackSpeedBar.setProgress(30, animated: false)
+        trackSpeedBar.translatesAutoresizingMaskIntoConstraints = false
+        
+        mixingContainer.addSubview(trackSpeedBar)
+        NSLayoutConstraint.activate([
+            trackSpeedBar.bottomAnchor.constraint(equalTo: mixingContainer.bottomAnchor, constant: -10),
+            trackSpeedBar.leadingAnchor.constraint(equalTo: mixingContainer.leadingAnchor, constant: 20),
+            trackSpeedBar.trailingAnchor.constraint(equalTo: mixingContainer.trailingAnchor, constant: -20),
+            trackSpeedBar.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
 }

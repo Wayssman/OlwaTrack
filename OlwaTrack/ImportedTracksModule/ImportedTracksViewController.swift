@@ -55,7 +55,7 @@ extension ImportedTracksViewController: UICollectionViewDataSource {
 extension ImportedTracksViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let trackEditController = TrackEditViewController()
-        trackEditController.modalPresentationStyle = .popover
+        trackEditController.modalPresentationStyle = .pageSheet
         present(trackEditController, animated: true)
     }
 }
