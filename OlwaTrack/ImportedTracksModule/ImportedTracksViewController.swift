@@ -55,7 +55,7 @@ extension ImportedTracksViewController: UICollectionViewDataSource {
 extension ImportedTracksViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let trackEditController = TrackEditViewController()
-        trackEditController.modalPresentationStyle = .pageSheet
+        trackEditController.modalPresentationStyle = .overFullScreen
         present(trackEditController, animated: true)
     }
 }

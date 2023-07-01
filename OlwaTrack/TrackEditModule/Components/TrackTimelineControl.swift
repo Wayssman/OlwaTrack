@@ -15,7 +15,8 @@ final class TrackTimelineControl: UIControl {
     let startAngle: CGFloat = -.pi / 2
     
     // MARK: Properties
-    var progress: CGFloat = 0
+    private var value = CGFloat(0.1)
+    private var valueDifference = CGFloat(0)
     
     // MARK: Sublayers
     let handleLayer = CAShapeLayer()
@@ -58,7 +59,7 @@ final class TrackTimelineControl: UIControl {
     
     private func drawProgressLine(_ rect: CGRect) {
         let color = UIColor("#007AFF") ?? .systemBlue
-        let endAngle: CGFloat = startAngle + 2 * .pi * progress
+        let endAngle: CGFloat = startAngle + 2 * .pi * value
         
         let path = UIBezierPath(
             arcCenter: .init(x: rect.midX, y: rect.midY),
@@ -92,8 +93,45 @@ final class TrackTimelineControl: UIControl {
 }
 
 extension TrackTimelineControl {
-    func configure(progress: CGFloat) {
-        self.progress = progress
+    override func beginTracking(_ touch: UITouch, with event: UIEvent?) -> Bool {
+        let pointInView = touch.location(in: self)
+        let yPos = pointInView.y - bounds.midY
+        let xPos = pointInView.x - bounds.midX
+        guard handleLayer.path?.contains(pointInView) ?? false else {
+            return false
+        }
+        
+        
+        let angle = atan2(yPos, xPos) - startAngle
+        let fraction = angle / (2 * .pi)
+        valueDifference = fraction - value
+        return true
+    }
+    
+    override func continueTracking(_ touch: UITouch, with event: UIEvent?) -> Bool {
+        let pointInView = touch.location(in: self)
+        let yPos = pointInView.y - bounds.midY
+        let xPos = pointInView.x - bounds.midX
+        
+        let angle = atan2(yPos, xPos) - startAngle
+        let fraction = angle / (2 * .pi)
+        value = fraction - valueDifference
+        setNeedsDisplay()
+        return true
+    }
+    
+    override func endTracking(_ touch: UITouch?, with event: UIEvent?) {
+        valueDifference = 0
+    }
+    
+    override func cancelTracking(with event: UIEvent?) {
+        valueDifference = 0
+    }
+}
+
+extension TrackTimelineControl {
+    func configure(value: CGFloat) {
+        self.value = value
         setNeedsDisplay()
     }
 }

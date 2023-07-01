@@ -14,7 +14,7 @@ final class OTOptionControl: UIControl {
     
     // MARK: Properties
     private var value = CGFloat(0)
-    private var beginTrackingPoint: CGPoint?
+    private var valueDifference = CGFloat(0)
     
     // MARK: Sublayers
     let handleLayer = CAShapeLayer()
@@ -53,9 +53,7 @@ final class OTOptionControl: UIControl {
     
     private func drawValueLine(_ rect: CGRect) {
         let color = UIColor("#007AFF") ?? .systemBlue
-        var endPosition = (rect.width - lineWidth) * value
-        if endPosition < lineWidth / 2 { endPosition = lineWidth / 2 }
-        if endPosition > rect.width - lineWidth / 2 { endPosition = rect.width - lineWidth / 2 }
+        let endPosition = (rect.width - lineWidth) * value
         
         let path = UIBezierPath()
         path.move(to: .init(x: rect.minX + lineWidth/2, y: rect.midY))
@@ -73,8 +71,6 @@ final class OTOptionControl: UIControl {
         let xPosition = endPosition
         let yPosition = rect.midY
         
-        print("Handle center x: \(xPosition)")
-        
         handleLayer.path = UIBezierPath(
             ovalIn: .init(
                 origin: .init(x: xPosition - handleRadius, y: yPosition - handleRadius),
@@ -89,37 +85,32 @@ final class OTOptionControl: UIControl {
 extension OTOptionControl {
     override func beginTracking(_ touch: UITouch, with event: UIEvent?) -> Bool {
         let pointInView = touch.location(in: self)
-        guard
-            let handlePath = handleLayer.path,
-            handlePath.contains(pointInView)
-        else { return false }
+        let pathLength = bounds.width - lineWidth
+        let xPosTouch = pointInView.x
+        let fraction = xPosTouch / pathLength
         
-        beginTrackingPoint = pointInView
+        valueDifference = fraction - value
         return true
     }
     
     override func continueTracking(_ touch: UITouch, with event: UIEvent?) -> Bool {
-        guard let beginTrackingPoint = beginTrackingPoint else {
-            return false
-        }
-        
         let pointInView = touch.location(in: self)
         let pathLength = bounds.width - lineWidth
         
-        let diff = pointInView.x
-        let fraction = diff / pathLength
-        value = fraction
+        let xPosTouch = pointInView.x
+        let fraction = xPosTouch / pathLength
+        value = max(0, min(1, fraction - valueDifference))
         
         setNeedsDisplay()
         return true
     }
     
     override func endTracking(_ touch: UITouch?, with event: UIEvent?) {
-        beginTrackingPoint = nil
+        valueDifference = 0
     }
     
     override func cancelTracking(with event: UIEvent?) {
-        beginTrackingPoint = nil
+        valueDifference = 0
     }
 }
 

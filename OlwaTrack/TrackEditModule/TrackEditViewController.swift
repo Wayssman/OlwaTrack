@@ -23,21 +23,11 @@ final class TrackEditViewController: UIViewController {
     private let trackSpeedLabel = UILabel()
     private let trackSpeedBar = OTOptionControl()
     
-    private var timer: Timer?
-    var progress: CGFloat = 0
-    
     // MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setup()
-        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { timer in
-            self.progress += (10 / 100)
-            if self.progress >= 1 {
-                self.progress = 0
-            }
-            self.timeline.configure(progress: self.progress)
-        })
     }
 }
 
