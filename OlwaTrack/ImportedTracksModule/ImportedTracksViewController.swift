@@ -52,6 +52,14 @@ extension ImportedTracksViewController: UICollectionViewDataSource {
     }
 }
 
+extension ImportedTracksViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let trackEditController = TrackEditViewController()
+        trackEditController.modalPresentationStyle = .overFullScreen
+        present(trackEditController, animated: true)
+    }
+}
+
 // MARK: - UICollectionViewDelegateFlowLayout
 extension ImportedTracksViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -94,7 +102,6 @@ private extension ImportedTracksViewController {
         tracksContentView.layer.shadowColor = UIColor.black.cgColor
         tracksContentView.layer.shadowRadius = 10
         tracksContentView.layer.shadowOpacity = 0.25
-        tracksContentView.clipsToBounds = false
         tracksContentView.translatesAutoresizingMaskIntoConstraints = false
         
         view.addSubview(tracksContentView)

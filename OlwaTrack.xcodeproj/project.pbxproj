@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		705621492A435C190032CD91 /* OTOptionControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 705621482A435C190032CD91 /* OTOptionControl.swift */; };
 		70F4C00E2A2824F3004FDC5A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F4C00D2A2824F3004FDC5A /* AppDelegate.swift */; };
 		70F4C0102A2824F3004FDC5A /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F4C00F2A2824F3004FDC5A /* SceneDelegate.swift */; };
 		70F4C0122A2824F3004FDC5A /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F4C0112A2824F3004FDC5A /* ViewController.swift */; };
@@ -16,17 +17,15 @@
 		70F4C0242A282A2B004FDC5A /* FileObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F4C0232A282A2B004FDC5A /* FileObject.swift */; };
 		70F4C0262A283E90004FDC5A /* TrackViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F4C0252A283E90004FDC5A /* TrackViewController.swift */; };
 		70F4C0292A28441C004FDC5A /* AVFAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70F4C0282A28441C004FDC5A /* AVFAudio.framework */; };
+		70FC27252A333D3B00A6122B /* TrackEditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70FC27242A333D3B00A6122B /* TrackEditViewController.swift */; };
+		70FC27282A335EAC00A6122B /* TrackTimelineControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70FC27272A335EAB00A6122B /* TrackTimelineControl.swift */; };
 		70FF75732A2CD5B100558DD0 /* ImportedTracksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70FF75722A2CD5B100558DD0 /* ImportedTracksViewController.swift */; };
-		70FF75762A2CD7B100558DD0 /* OTActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70FF75752A2CD7B100558DD0 /* OTActionButton.swift */; };
-		70FF75792A2CD89500558DD0 /* UIView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70FF75782A2CD89500558DD0 /* UIView+Extensions.swift */; };
-		70FF757B2A2CD89E00558DD0 /* UIControl+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70FF757A2A2CD89E00558DD0 /* UIControl+Extensions.swift */; };
-		70FF757D2A2CD92F00558DD0 /* UIButton+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70FF757C2A2CD92F00558DD0 /* UIButton+Extensions.swift */; };
-		70FF757F2A2CD95C00558DD0 /* OTBaseElements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70FF757E2A2CD95C00558DD0 /* OTBaseElements.swift */; };
 		70FF75812A2CE6D700558DD0 /* UIColor+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70FF75802A2CE6D700558DD0 /* UIColor+Extensions.swift */; };
 		70FF75842A2D078700558DD0 /* ImportedTracksCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70FF75832A2D078700558DD0 /* ImportedTracksCollectionCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		705621482A435C190032CD91 /* OTOptionControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTOptionControl.swift; sourceTree = "<group>"; };
 		70F4C00A2A2824F3004FDC5A /* OlwaTrack.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OlwaTrack.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		70F4C00D2A2824F3004FDC5A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		70F4C00F2A2824F3004FDC5A /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -38,12 +37,9 @@
 		70F4C0232A282A2B004FDC5A /* FileObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileObject.swift; sourceTree = "<group>"; };
 		70F4C0252A283E90004FDC5A /* TrackViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackViewController.swift; sourceTree = "<group>"; };
 		70F4C0282A28441C004FDC5A /* AVFAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFAudio.framework; path = System/Library/Frameworks/AVFAudio.framework; sourceTree = SDKROOT; };
+		70FC27242A333D3B00A6122B /* TrackEditViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackEditViewController.swift; sourceTree = "<group>"; };
+		70FC27272A335EAB00A6122B /* TrackTimelineControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackTimelineControl.swift; sourceTree = "<group>"; };
 		70FF75722A2CD5B100558DD0 /* ImportedTracksViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportedTracksViewController.swift; sourceTree = "<group>"; };
-		70FF75752A2CD7B100558DD0 /* OTActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTActionButton.swift; sourceTree = "<group>"; };
-		70FF75782A2CD89500558DD0 /* UIView+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Extensions.swift"; sourceTree = "<group>"; };
-		70FF757A2A2CD89E00558DD0 /* UIControl+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIControl+Extensions.swift"; sourceTree = "<group>"; };
-		70FF757C2A2CD92F00558DD0 /* UIButton+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+Extensions.swift"; sourceTree = "<group>"; };
-		70FF757E2A2CD95C00558DD0 /* OTBaseElements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTBaseElements.swift; sourceTree = "<group>"; };
 		70FF75802A2CE6D700558DD0 /* UIColor+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extensions.swift"; sourceTree = "<group>"; };
 		70FF75832A2D078700558DD0 /* ImportedTracksCollectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportedTracksCollectionCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -105,6 +101,14 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		70FC27262A335E8400A6122B /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				70FC27272A335EAB00A6122B /* TrackTimelineControl.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
 		70FF75702A2CCCE400558DD0 /* ImportedTracksModule */ = {
 			isa = PBXGroup;
 			children = (
@@ -117,6 +121,8 @@
 		70FF75712A2CCD4200558DD0 /* TrackEditModule */ = {
 			isa = PBXGroup;
 			children = (
+				70FC27242A333D3B00A6122B /* TrackEditViewController.swift */,
+				70FC27262A335E8400A6122B /* Components */,
 			);
 			path = TrackEditModule;
 			sourceTree = "<group>";
@@ -124,7 +130,7 @@
 		70FF75742A2CD78500558DD0 /* CustomizedElements */ = {
 			isa = PBXGroup;
 			children = (
-				70FF75752A2CD7B100558DD0 /* OTActionButton.swift */,
+				705621482A435C190032CD91 /* OTOptionControl.swift */,
 			);
 			path = CustomizedElements;
 			sourceTree = "<group>";
@@ -132,10 +138,6 @@
 		70FF75772A2CD87900558DD0 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				70FF75782A2CD89500558DD0 /* UIView+Extensions.swift */,
-				70FF757A2A2CD89E00558DD0 /* UIControl+Extensions.swift */,
-				70FF757C2A2CD92F00558DD0 /* UIButton+Extensions.swift */,
-				70FF757E2A2CD95C00558DD0 /* OTBaseElements.swift */,
 				70FF75802A2CE6D700558DD0 /* UIColor+Extensions.swift */,
 			);
 			path = Extensions;
@@ -220,19 +222,17 @@
 			buildActionMask = 2147483647;
 			files = (
 				70F4C0122A2824F3004FDC5A /* ViewController.swift in Sources */,
-				70FF757B2A2CD89E00558DD0 /* UIControl+Extensions.swift in Sources */,
+				70FC27282A335EAC00A6122B /* TrackTimelineControl.swift in Sources */,
 				70F4C00E2A2824F3004FDC5A /* AppDelegate.swift in Sources */,
 				70FF75812A2CE6D700558DD0 /* UIColor+Extensions.swift in Sources */,
 				70F4C0102A2824F3004FDC5A /* SceneDelegate.swift in Sources */,
-				70FF75792A2CD89500558DD0 /* UIView+Extensions.swift in Sources */,
-				70FF757F2A2CD95C00558DD0 /* OTBaseElements.swift in Sources */,
 				70F4C0222A2826F6004FDC5A /* MainViewController.swift in Sources */,
-				70FF75762A2CD7B100558DD0 /* OTActionButton.swift in Sources */,
 				70FF75732A2CD5B100558DD0 /* ImportedTracksViewController.swift in Sources */,
 				70F4C0262A283E90004FDC5A /* TrackViewController.swift in Sources */,
 				70FF75842A2D078700558DD0 /* ImportedTracksCollectionCell.swift in Sources */,
-				70FF757D2A2CD92F00558DD0 /* UIButton+Extensions.swift in Sources */,
+				705621492A435C190032CD91 /* OTOptionControl.swift in Sources */,
 				70F4C0242A282A2B004FDC5A /* FileObject.swift in Sources */,
+				70FC27252A333D3B00A6122B /* TrackEditViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
