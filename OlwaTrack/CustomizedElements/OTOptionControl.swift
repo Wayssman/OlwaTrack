@@ -9,12 +9,12 @@ import UIKit
 
 final class OTOptionControl: UIControl {
     // MARK: Constants
-    let handleRadius = CGFloat(10)
-    let lineWidth = CGFloat(4)
+    let handleRadius: CGFloat = 10
+    let lineWidth: CGFloat = 4
     
     // MARK: Properties
-    private var value = CGFloat(0)
-    private var valueDifference = CGFloat(0)
+    private var value: CGFloat = 0
+    private var valueDifference: CGFloat = 0
     
     // MARK: Sublayers
     let handleLayer = CAShapeLayer()
@@ -22,7 +22,6 @@ final class OTOptionControl: UIControl {
     // MARK: Initializers
     override init(frame: CGRect) {
         super.init(frame: .zero)
-        
         setup()
     }
     
@@ -36,6 +35,11 @@ final class OTOptionControl: UIControl {
         
         drawBackgroundLine(rect)
         drawValueLine(rect)
+    }
+    
+    // MARK: Others
+    override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        return false
     }
     
     private func drawBackgroundLine(_ rect: CGRect) {
@@ -78,7 +82,6 @@ final class OTOptionControl: UIControl {
             )
         ).cgPath
         handleLayer.fillColor = UIColor.white.cgColor
-        
     }
 }
 
@@ -115,10 +118,12 @@ extension OTOptionControl {
 }
 
 private extension OTOptionControl {
+    // MARK: Setup
     func setup() {
         // View
         backgroundColor = .clear
         
+        // Handle Layer
         handleLayer.shadowColor = UIColor.black.cgColor
         handleLayer.shadowOffset = .init(width: 0, height: 0.5)
         handleLayer.shadowRadius = 4

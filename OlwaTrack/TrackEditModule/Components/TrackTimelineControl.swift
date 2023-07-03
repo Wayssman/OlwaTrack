@@ -9,14 +9,14 @@ import UIKit
 
 final class TrackTimelineControl: UIControl {
     // MARK: Constants
-    let handleRadius = CGFloat(10)
-    let timelinePadding = CGFloat(4)
-    let timelineWidth = CGFloat(4)
+    let handleRadius: CGFloat = 10
+    let timelinePadding: CGFloat = 4
+    let timelineWidth: CGFloat = 4
     let startAngle: CGFloat = -.pi / 2
     
     // MARK: Properties
-    private var value = CGFloat(0.1)
-    private var valueDifference = CGFloat(0)
+    private var value: CGFloat = 0.1
+    private var valueDifference: CGFloat = 0
     
     // MARK: Sublayers
     let handleLayer = CAShapeLayer()
@@ -24,7 +24,6 @@ final class TrackTimelineControl: UIControl {
     // MARK: Initializers
     override init(frame: CGRect) {
         super.init(frame: .zero)
-        
         setup()
     }
     
@@ -89,6 +88,11 @@ final class TrackTimelineControl: UIControl {
         ).cgPath
         handleLayer.fillColor = UIColor.white.cgColor
         
+    }
+    
+    // MARK: Others
+    override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        return false
     }
 }
 

@@ -16,8 +16,8 @@ final class ImportedTracksViewController: UIViewController {
     ]
     
     // MARK: Subviews
+    private let headerContentView = UIView()
     private let addTrackButton = UIButton()
-    private let tracksContentView = UIView()
     private let tracksCollectionView = UICollectionView(
         frame: .zero,
         collectionViewLayout: UICollectionViewFlowLayout()
@@ -28,8 +28,8 @@ final class ImportedTracksViewController: UIViewController {
         super.viewDidLoad()
         
         setup()
+        layout()
     }
-    
 }
 
 // MARK: - UICollectionViewDataSource
@@ -39,13 +39,7 @@ extension ImportedTracksViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: ImportedTracksCollectionCell.cellId,
-            for: indexPath
-        ) as? ImportedTracksCollectionCell else {
-            fatalError()
-        }
-        
+        let cell: ImportedTracksCollectionCell = collectionView.dequeueCell(at: indexPath)
         cell.configure(title: fakeModel[indexPath.item])
         
         return cell
@@ -55,7 +49,7 @@ extension ImportedTracksViewController: UICollectionViewDataSource {
 extension ImportedTracksViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let trackEditController = TrackEditViewController()
-        trackEditController.modalPresentationStyle = .overFullScreen
+        trackEditController.modalPresentationStyle = .pageSheet
         present(trackEditController, animated: true)
     }
 }
@@ -73,11 +67,51 @@ private extension ImportedTracksViewController {
         
     }
     
+    // MARK: Layout
+    func layout() {
+        NSLayoutConstraint.activate([
+            tracksCollectionView.topAnchor.constraint(equalTo: headerContentView.bottomAnchor),
+            tracksCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tracksCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tracksCollectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            
+            headerContentView.topAnchor.constraint(equalTo: view.topAnchor),
+            headerContentView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            headerContentView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            headerContentView.heightAnchor.constraint(equalToConstant: 100),
+            
+                addTrackButton.trailingAnchor.constraint(equalTo: headerContentView.trailingAnchor, constant: -14),
+                addTrackButton.bottomAnchor.constraint(equalTo: headerContentView.bottomAnchor, constant: -14),
+                addTrackButton.heightAnchor.constraint(equalToConstant: 35),
+                addTrackButton.widthAnchor.constraint(equalToConstant: 100)
+        ])
+    }
+    
     // MARK: Setup
     func setup() {
         // View
         view.backgroundColor = .white
         navigationController?.isNavigationBarHidden = true
+        
+        // Tracks Collection View
+        tracksCollectionView.showsVerticalScrollIndicator = false
+        tracksCollectionView.showsHorizontalScrollIndicator = false
+        tracksCollectionView.alwaysBounceVertical = true
+        tracksCollectionView.contentInset = .init(top: 13, left: 0, bottom: -13, right: 0)
+        tracksCollectionView.translatesAutoresizingMaskIntoConstraints = false
+        tracksCollectionView.registerCell(reuseable: ImportedTracksCollectionCell.self)
+        tracksCollectionView.dataSource = self
+        tracksCollectionView.delegate = self
+        view.addSubview(tracksCollectionView)
+        
+        // Tracks Content View
+        headerContentView.backgroundColor = .white
+        headerContentView.layer.shadowOffset = .init(width: 0, height: 0)
+        headerContentView.layer.shadowColor = UIColor.black.cgColor
+        headerContentView.layer.shadowRadius = 10
+        headerContentView.layer.shadowOpacity = 0.25
+        headerContentView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(headerContentView)
         
         // Add Track Button
         addTrackButton.backgroundColor = UIColor("#3A3A3C")
@@ -85,55 +119,7 @@ private extension ImportedTracksViewController {
         addTrackButton.titleLabel?.font = .systemFont(ofSize: 14, weight: .regular)
         addTrackButton.setTitle("Add Track", for: [])
         addTrackButton.translatesAutoresizingMaskIntoConstraints = false
-        
         addTrackButton.addTarget(self, action: #selector(addTrackButtonTapped), for: .touchUpInside)
-        
-        view.addSubview(addTrackButton)
-        NSLayoutConstraint.activate([
-            addTrackButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
-            addTrackButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -13),
-            addTrackButton.heightAnchor.constraint(equalToConstant: 35),
-            addTrackButton.widthAnchor.constraint(equalToConstant: 100)
-        ])
-        
-        // Tracks Content View
-        tracksContentView.layer.cornerRadius = 20
-        tracksContentView.layer.shadowOffset = .init(width: 0, height: 0)
-        tracksContentView.layer.shadowColor = UIColor.black.cgColor
-        tracksContentView.layer.shadowRadius = 10
-        tracksContentView.layer.shadowOpacity = 0.25
-        tracksContentView.translatesAutoresizingMaskIntoConstraints = false
-        
-        view.addSubview(tracksContentView)
-        NSLayoutConstraint.activate([
-            tracksContentView.topAnchor.constraint(equalTo: addTrackButton.bottomAnchor, constant: 13),
-            tracksContentView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8),
-            tracksContentView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -8),
-            tracksContentView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -8)
-        ])
-        
-        
-        // Tracks Collection View
-        tracksCollectionView.layer.cornerRadius = 20
-        tracksCollectionView.showsVerticalScrollIndicator = false
-        tracksCollectionView.showsHorizontalScrollIndicator = false
-        tracksCollectionView.alwaysBounceVertical = true
-        tracksCollectionView.contentInset = .init(top: 13, left: 0, bottom: -13, right: 0)
-        tracksCollectionView.translatesAutoresizingMaskIntoConstraints = false
-        
-        tracksCollectionView.register(
-            ImportedTracksCollectionCell.self,
-            forCellWithReuseIdentifier: ImportedTracksCollectionCell.cellId
-        )
-        tracksCollectionView.dataSource = self
-        tracksCollectionView.delegate = self
-        
-        tracksContentView.addSubview(tracksCollectionView)
-        NSLayoutConstraint.activate([
-            tracksCollectionView.topAnchor.constraint(equalTo: tracksContentView.topAnchor),
-            tracksCollectionView.leadingAnchor.constraint(equalTo: tracksContentView.leadingAnchor),
-            tracksCollectionView.trailingAnchor.constraint(equalTo: tracksContentView.trailingAnchor),
-            tracksCollectionView.bottomAnchor.constraint(equalTo: tracksContentView.bottomAnchor)
-        ])
+        headerContentView.addSubview(addTrackButton)
     }
 }
