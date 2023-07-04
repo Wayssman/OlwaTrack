@@ -8,9 +8,6 @@
 import UIKit
 
 final class ImportedTracksCollectionCell: UICollectionViewCell {
-    // MARK: Static
-    static let cellId = "ImportedTracksCollectionCell"
-    
     // MARK: Subviews
     private let trackPreview = UIImageView()
     private let trackTitle = UILabel()
@@ -20,6 +17,7 @@ final class ImportedTracksCollectionCell: UICollectionViewCell {
         super.init(frame: .zero)
         
         setup()
+        layout()
     }
     
     required init?(coder: NSCoder) {
@@ -40,6 +38,21 @@ final class ImportedTracksCollectionCell: UICollectionViewCell {
 }
 
 private extension ImportedTracksCollectionCell {
+    // MARK: Layout
+    func layout() {
+        NSLayoutConstraint.activate([
+            trackPreview.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 13),
+            trackPreview.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12.5),
+            trackPreview.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -13),
+            trackPreview.widthAnchor.constraint(equalTo: trackPreview.heightAnchor),
+            
+            trackTitle.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 13),
+            trackTitle.leadingAnchor.constraint(equalTo: trackPreview.trailingAnchor, constant: 10),
+            trackTitle.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12.5),
+            trackTitle.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -13)
+        ])
+    }
+    
     // MARK: Setup
     func setup() {
         // Track Preview
@@ -52,14 +65,7 @@ private extension ImportedTracksCollectionCell {
         trackPreview.contentMode = .scaleAspectFit
         trackPreview.image = UIImage(named: "ColoredPlaceholder")
         trackPreview.translatesAutoresizingMaskIntoConstraints = false
-        
         contentView.addSubview(trackPreview)
-        NSLayoutConstraint.activate([
-            trackPreview.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 13),
-            trackPreview.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12.5),
-            trackPreview.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -13),
-            trackPreview.widthAnchor.constraint(equalTo: trackPreview.heightAnchor)
-        ])
         
         // Track Title
         trackTitle.numberOfLines = 0
@@ -68,13 +74,6 @@ private extension ImportedTracksCollectionCell {
         trackTitle.font = .systemFont(ofSize: 16, weight: .bold)
         trackTitle.textColor = .black
         trackTitle.translatesAutoresizingMaskIntoConstraints = false
-        
         contentView.addSubview(trackTitle)
-        NSLayoutConstraint.activate([
-            trackTitle.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 13),
-            trackTitle.leadingAnchor.constraint(equalTo: trackPreview.trailingAnchor, constant: 10),
-            trackTitle.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12.5),
-            trackTitle.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -13)
-        ])
     }
 }
