@@ -15,11 +15,11 @@ final class TrackTimelineControl: UIControl {
     let startAngle: CGFloat = -.pi / 2
     
     // MARK: Properties
-    private var value: CGFloat = 0.1
+    private var value: CGFloat = 0
     private var valueDifference: CGFloat = 0
     
     // MARK: Sublayers
-    let handleLayer = CAShapeLayer()
+    private let handleLayer = CAShapeLayer()
     
     // MARK: Initializers
     override init(frame: CGRect) {
@@ -47,7 +47,70 @@ final class TrackTimelineControl: UIControl {
         drawProgressLine(smallerRect)
     }
     
-    private func drawBackgroundLine(_ rect: CGRect) {
+    // MARK: Configuration
+    func configure(value: CGFloat) {
+        self.value = value
+        setNeedsDisplay()
+    }
+    
+    // MARK: Others
+    override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        return false
+    }
+}
+
+// MARK: - Tracking
+extension TrackTimelineControl {
+    override func beginTracking(_ touch: UITouch, with event: UIEvent?) -> Bool {
+        let pointInView = touch.location(in: self)
+        guard handleLayer.path?.contains(pointInView) ?? false else {
+            return false
+        }
+        
+        let yPos = pointInView.y - bounds.midY
+        let xPos = pointInView.x - bounds.midX
+        let angle = atan2(yPos, xPos) - startAngle
+        let fraction = angle / (2 * .pi)
+        valueDifference = fraction - value
+        return true
+    }
+    
+    override func continueTracking(_ touch: UITouch, with event: UIEvent?) -> Bool {
+        let pointInView = touch.location(in: self)
+        let yPos = pointInView.y - bounds.midY
+        let xPos = pointInView.x - bounds.midX
+        let angle = atan2(yPos, xPos) - startAngle
+        let fraction = angle / (2 * .pi)
+        value = fraction - valueDifference
+        setNeedsDisplay()
+        return true
+    }
+    
+    override func endTracking(_ touch: UITouch?, with event: UIEvent?) {
+        valueDifference = 0
+    }
+    
+    override func cancelTracking(with event: UIEvent?) {
+        valueDifference = 0
+    }
+}
+
+private extension TrackTimelineControl {
+    // MARK: Setup
+    func setup() {
+        // Self
+        backgroundColor = .clear
+        
+        // Handle Layer
+        handleLayer.shadowColor = UIColor.black.cgColor
+        handleLayer.shadowOffset = .init(width: 0, height: 0.5)
+        handleLayer.shadowRadius = 4
+        handleLayer.shadowOpacity = 0.12
+        layer.addSublayer(handleLayer)
+    }
+    
+    // MARK: Helpers
+    func drawBackgroundLine(_ rect: CGRect) {
         let color = UIColor("#3C3C43")?.withAlphaComponent(0.18) ?? .gray
         
         let path = UIBezierPath(ovalIn: rect)
@@ -56,7 +119,7 @@ final class TrackTimelineControl: UIControl {
         path.stroke()
     }
     
-    private func drawProgressLine(_ rect: CGRect) {
+    func drawProgressLine(_ rect: CGRect) {
         let color = UIColor("#007AFF") ?? .systemBlue
         let endAngle: CGFloat = startAngle + 2 * .pi * value
         
@@ -75,7 +138,7 @@ final class TrackTimelineControl: UIControl {
         drawHandle(progressLineRadius: rect.width / 2, angle: endAngle)
     }
     
-    private func drawHandle(progressLineRadius: CGFloat, angle: CGFloat) {
+    func drawHandle(progressLineRadius: CGFloat, angle: CGFloat) {
         let xPosition = progressLineRadius * cos(angle)
         let yPosition = progressLineRadius * sin(angle)
         let coordsPadding = progressLineRadius + timelinePadding - handleRadius
@@ -87,68 +150,5 @@ final class TrackTimelineControl: UIControl {
             )
         ).cgPath
         handleLayer.fillColor = UIColor.white.cgColor
-        
-    }
-    
-    // MARK: Others
-    override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        return false
-    }
-}
-
-extension TrackTimelineControl {
-    override func beginTracking(_ touch: UITouch, with event: UIEvent?) -> Bool {
-        let pointInView = touch.location(in: self)
-        let yPos = pointInView.y - bounds.midY
-        let xPos = pointInView.x - bounds.midX
-        guard handleLayer.path?.contains(pointInView) ?? false else {
-            return false
-        }
-        
-        
-        let angle = atan2(yPos, xPos) - startAngle
-        let fraction = angle / (2 * .pi)
-        valueDifference = fraction - value
-        return true
-    }
-    
-    override func continueTracking(_ touch: UITouch, with event: UIEvent?) -> Bool {
-        let pointInView = touch.location(in: self)
-        let yPos = pointInView.y - bounds.midY
-        let xPos = pointInView.x - bounds.midX
-        
-        let angle = atan2(yPos, xPos) - startAngle
-        let fraction = angle / (2 * .pi)
-        value = fraction - valueDifference
-        setNeedsDisplay()
-        return true
-    }
-    
-    override func endTracking(_ touch: UITouch?, with event: UIEvent?) {
-        valueDifference = 0
-    }
-    
-    override func cancelTracking(with event: UIEvent?) {
-        valueDifference = 0
-    }
-}
-
-extension TrackTimelineControl {
-    func configure(value: CGFloat) {
-        self.value = value
-        setNeedsDisplay()
-    }
-}
-
-private extension TrackTimelineControl {
-    func setup() {
-        // View
-        backgroundColor = .clear
-        
-        handleLayer.shadowColor = UIColor.black.cgColor
-        handleLayer.shadowOffset = .init(width: 0, height: 0.5)
-        handleLayer.shadowRadius = 4
-        handleLayer.shadowOpacity = 0.12
-        layer.addSublayer(handleLayer)
     }
 }
