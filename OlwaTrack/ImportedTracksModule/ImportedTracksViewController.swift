@@ -8,13 +8,12 @@
 import UIKit
 
 final class ImportedTracksViewController: UIViewController {
-    // MARK: Properties
-    private let fakeModel = [
-        "Music File Name 1 - Very Long Long Naame",
-        "Music File Name 1 - Very Long Long Naame",
-        "Music File Name 1 - Very Long Long Naame"
-    ]
+    // MARK: Constants
+    let nameOfDirectoryForImport = "OlwaTrackImported"
     
+    // MARK: Properties
+    private var tracksFiles: [URL] = []
+
     // MARK: Subviews
     private let headerContentView = UIView()
     private let addTrackButton = UIButton()
@@ -26,21 +25,22 @@ final class ImportedTracksViewController: UIViewController {
     // MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setup()
         layout()
+        
+        getImportedFiles()
     }
 }
 
 // MARK: - UICollectionViewDataSource
 extension ImportedTracksViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return fakeModel.count
+        return tracksFiles.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell: ImportedTracksCollectionCell = collectionView.dequeueCell(at: indexPath)
-        cell.configure(title: fakeModel[indexPath.item])
+        cell.configure(trackUrl: tracksFiles[indexPath.item])
         
         return cell
     }
@@ -61,10 +61,71 @@ extension ImportedTracksViewController: UICollectionViewDelegateFlowLayout {
     }
 }
 
+// MARK: - UIDocumentPickerDelegate
+extension ImportedTracksViewController: UIDocumentPickerDelegate {
+    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        guard let fileForImport = urls.first else {
+            // TODO: Write Error Handling
+            return
+        }
+        
+        importFile(at: fileForImport)
+    }
+}
+
 private extension ImportedTracksViewController {
+    // MARK: Internal
+    func importFile(at url: URL) {
+        guard
+            let documentsUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+        else {
+            // TODO: Write Error Handling
+            return
+        }
+        
+        // Creates new directory
+        // Miss error handling if directory already exists
+        let newDirectoryUrl = documentsUrl.appendingPathComponent(nameOfDirectoryForImport, isDirectory: true)
+        try? FileManager.default.createDirectory(at: newDirectoryUrl, withIntermediateDirectories: false)
+        
+        // Creates new file
+        let newFileUrl = newDirectoryUrl.appendingPathComponent(url.lastPathComponent, isDirectory: false)
+        do {
+            try FileManager.default.copyItem(at: url, to: newFileUrl)
+        } catch {
+            // TODO: Write Error Handling
+        }
+        
+        getImportedFiles()
+    }
+    
+    func getImportedFiles() {
+        guard
+            let documentsUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+        else {
+            // TODO: Write Error Handling
+            return
+        }
+        // Get contents of directory
+        let directoryForImportUrl = documentsUrl.appendingPathComponent(nameOfDirectoryForImport, isDirectory: true)
+        do {
+            let contentOfDirectory = try FileManager.default.contentsOfDirectory(
+                at: directoryForImportUrl,
+                includingPropertiesForKeys: nil
+            )
+            tracksFiles = contentOfDirectory
+            tracksCollectionView.reloadData()
+        } catch {
+            // TODO: Write Error Handling
+        }
+    }
+    
     // MARK: User Interactivity
     @objc func addTrackButtonTapped() {
-        
+        let filePicker = UIDocumentPickerViewController(documentTypes: ["public.audio"], in: .import)
+        filePicker.allowsMultipleSelection = false
+        filePicker.delegate = self
+        present(filePicker, animated: true)
     }
     
     // MARK: Layout
@@ -94,6 +155,7 @@ private extension ImportedTracksViewController {
         navigationController?.isNavigationBarHidden = true
         
         // Tracks Collection View
+        tracksCollectionView.backgroundColor = .white
         tracksCollectionView.showsVerticalScrollIndicator = false
         tracksCollectionView.showsHorizontalScrollIndicator = false
         tracksCollectionView.alwaysBounceVertical = true
