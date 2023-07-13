@@ -8,6 +8,9 @@
 import UIKit
 
 final class TrackTimelineControl: UIControl {
+    // MARK: Callbacks
+    var valueDidChange: ((Float) -> Void)?
+    
     // MARK: Constants
     let handleRadius: CGFloat = 10
     let timelinePadding: CGFloat = 4
@@ -15,8 +18,8 @@ final class TrackTimelineControl: UIControl {
     let startAngle: CGFloat = -.pi / 2
     
     // MARK: Properties
-    private var value: CGFloat = 0
-    private var valueDifference: CGFloat = 0
+    private var value: Float = 0
+    private var valueDifference: Float = 0
     
     // MARK: Sublayers
     private let handleLayer = CAShapeLayer()
@@ -47,8 +50,9 @@ final class TrackTimelineControl: UIControl {
         drawProgressLine(smallerRect)
     }
     
-    // MARK: Configuration
-    func configure(value: CGFloat) {
+    // MARK: Interface
+    func configure(value: Float) {
+        guard !isTracking else { return }
         self.value = value
         setNeedsDisplay()
     }
@@ -71,7 +75,7 @@ extension TrackTimelineControl {
         let xPos = pointInView.x - bounds.midX
         let angle = atan2(yPos, xPos) - startAngle
         let fraction = angle / (2 * .pi)
-        valueDifference = fraction - value
+        valueDifference = Float(fraction) - value
         return true
     }
     
@@ -81,7 +85,8 @@ extension TrackTimelineControl {
         let xPos = pointInView.x - bounds.midX
         let angle = atan2(yPos, xPos) - startAngle
         let fraction = angle / (2 * .pi)
-        value = fraction - valueDifference
+        value = Float(fraction) - valueDifference
+        valueDidChange?(value)
         setNeedsDisplay()
         return true
     }
@@ -121,7 +126,7 @@ private extension TrackTimelineControl {
     
     func drawProgressLine(_ rect: CGRect) {
         let color = UIColor("#007AFF") ?? .systemBlue
-        let endAngle: CGFloat = startAngle + 2 * .pi * value
+        let endAngle: CGFloat = startAngle + 2 * .pi * CGFloat(value)
         
         let path = UIBezierPath(
             arcCenter: .init(x: rect.midX, y: rect.midY),

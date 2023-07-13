@@ -8,13 +8,21 @@
 import UIKit
 
 final class OTOptionControl: UIControl {
+    // MARK: Callbacks
+    var valueDidChange: ((Float) -> Void)?
+    
     // MARK: Constants
     let handleRadius: CGFloat = 10
     let lineWidth: CGFloat = 4
     
     // MARK: Properties
-    private var value: CGFloat = 0
-    private var valueDifference: CGFloat = 0
+    private var maxValue: Float = 1
+    private var value: Float = 1 {
+        didSet {
+            valueDidChange?(value)
+        }
+    }
+    private var valueDifference: Float = 0
     
     // MARK: Sublayers
     let handleLayer = CAShapeLayer()
@@ -38,8 +46,10 @@ final class OTOptionControl: UIControl {
     }
     
     // MARK: Configuration
-    func configure() {
-        
+    func configure(initialValue: Float, maxValue: Float) {
+        self.maxValue = maxValue
+        self.value = initialValue
+        setNeedsDisplay()
     }
     
     // MARK: Others
@@ -53,7 +63,7 @@ extension OTOptionControl {
         let pointInView = touch.location(in: self)
         let pathLength = bounds.width - lineWidth
         let xPosTouch = pointInView.x
-        let fraction = xPosTouch / pathLength
+        let fraction = Float(xPosTouch / pathLength) * maxValue
         
         valueDifference = fraction - value
         return true
@@ -63,9 +73,9 @@ extension OTOptionControl {
         let pointInView = touch.location(in: self)
         let pathLength = bounds.width - lineWidth
         let xPosTouch = pointInView.x
-        let fraction = xPosTouch / pathLength
+        let fraction = Float(xPosTouch / pathLength) * maxValue
         
-        value = max(0, min(1, fraction - valueDifference))
+        value = max(0, min(maxValue, fraction - valueDifference))
         setNeedsDisplay()
         return true
     }
@@ -109,7 +119,7 @@ private extension OTOptionControl {
     
     private func drawValueLine(_ rect: CGRect) {
         let color = UIColor("#007AFF") ?? .systemBlue
-        let endPosition = (rect.width - lineWidth) * value
+        let endPosition = (rect.width - lineWidth) * CGFloat(value / maxValue)
         
         let path = UIBezierPath()
         path.move(to: .init(x: rect.minX + lineWidth / 2, y: rect.midY))
