@@ -8,6 +8,13 @@
 import UIKit
 
 final class TrackTimelinePanel: UIView {
+    // MARK: Callbacks
+    var currentTimeDidChange: ((TimeInterval) -> Void)?
+    
+    // MARK: Properties
+    private var lengthInSeconds: TimeInterval = 0
+    private var currentTimeInSeconds: TimeInterval = 0
+    
     // MARK: Subviews
     private let timeline = TrackTimelineControl()
     private let leftTimeLabel = UILabel()
@@ -24,6 +31,21 @@ final class TrackTimelinePanel: UIView {
         fatalError()
     }
     
+    // MARK: Interface
+    func configure(lengthInSeconds: TimeInterval) {
+        self.lengthInSeconds = lengthInSeconds
+        self.currentTimeInSeconds = 0
+        refreshTimeLabels(timeLeft: 0, timeRemains: lengthInSeconds)
+        timeline.configure(value: 0)
+    }
+    
+    func update(currentTimeInSeconds: TimeInterval) {
+        self.currentTimeInSeconds = currentTimeInSeconds
+        let timeRemains = lengthInSeconds - currentTimeInSeconds
+        refreshTimeLabels(timeLeft: currentTimeInSeconds, timeRemains: timeRemains)
+        timeline.configure(value: Float(currentTimeInSeconds/lengthInSeconds))
+    }
+    
     // MARK: Others
     override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         return false
@@ -31,6 +53,17 @@ final class TrackTimelinePanel: UIView {
 }
 
 private extension TrackTimelinePanel {
+    // MARK: Helpers
+    func refreshTimeLabels(timeLeft: TimeInterval, timeRemains: TimeInterval) {
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.hour, .minute, .second]
+        formatter.zeroFormattingBehavior = .pad
+        
+        leftTimeLabel.text = formatter.string(from: timeLeft.rounded(.up))
+        remainTimeLabel.text = "-" + (formatter.string(from: timeRemains.rounded(.up)) ?? "")
+    }
+    
+    
     // MARK: Layout
     func layout() {
         NSLayoutConstraint.activate([
@@ -58,6 +91,11 @@ private extension TrackTimelinePanel {
         layer.shadowRadius = 10
         
         // Timeline
+        timeline.valueDidChange = { [weak self] value in
+            guard let self = self else { return }
+            self.currentTimeInSeconds = self.lengthInSeconds * Double(value)
+            self.currentTimeDidChange?(self.currentTimeInSeconds)
+        }
         timeline.translatesAutoresizingMaskIntoConstraints = false
         addSubview(timeline)
         

@@ -8,6 +8,9 @@
 import UIKit
 
 final class TrackPlaybackControlsPanel: UIView {
+    // MARK: Callbacks
+    var didMainButtonTapped: (() -> Void)?
+    
     // MARK: Subviews
     private let playerButtonsStack = UIStackView()
     private let previousButton = UIButton()
@@ -25,6 +28,13 @@ final class TrackPlaybackControlsPanel: UIView {
         fatalError()
     }
     
+    // MARK: Interface
+    func setState(isPlaying: Bool) {
+        let playButtonImage = UIImage(named: "iconPlayControl")?.withRenderingMode(.alwaysTemplate)
+        let pauseButtonImage = UIImage(named: "iconPauseControl")?.withRenderingMode(.alwaysTemplate)
+        mainButton.setImage(isPlaying ? pauseButtonImage : playButtonImage, for: [])
+    }
+    
     // MARK: Others
     override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         return false
@@ -32,6 +42,11 @@ final class TrackPlaybackControlsPanel: UIView {
 }
 
 private extension TrackPlaybackControlsPanel {
+    // MARK: User Interactive
+    @objc func mainButtonTapped() {
+        didMainButtonTapped?()
+    }
+    
     // MARK: Layout
     func layout() {
         NSLayoutConstraint.activate([
@@ -47,7 +62,7 @@ private extension TrackPlaybackControlsPanel {
         // Player Buttons Stack
         playerButtonsStack.axis = .horizontal
         playerButtonsStack.spacing = 30
-        playerButtonsStack.isUserInteractionEnabled = false
+        //playerButtonsStack.isUserInteractionEnabled = false
         playerButtonsStack.translatesAutoresizingMaskIntoConstraints = false
         addSubview(playerButtonsStack)
         
@@ -64,6 +79,8 @@ private extension TrackPlaybackControlsPanel {
         mainButton.setImage(mainButtonImage, for: [])
         mainButton.tintColor = .systemBlue
         mainButton.adjustsImageWhenHighlighted = false
+        mainButton.addTarget(self, action: #selector(mainButtonTapped), for: .touchUpInside)
+        
         mainButton.translatesAutoresizingMaskIntoConstraints = false
         playerButtonsStack.addArrangedSubview(mainButton)
         

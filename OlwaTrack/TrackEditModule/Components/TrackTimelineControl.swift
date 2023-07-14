@@ -8,6 +8,9 @@
 import UIKit
 
 final class TrackTimelineControl: UIControl {
+    // MARK: Callbacks
+    var valueDidChange: ((CGFloat) -> Void)?
+    
     // MARK: Constants
     let handleRadius: CGFloat = 10
     let timelinePadding: CGFloat = 4
@@ -47,9 +50,10 @@ final class TrackTimelineControl: UIControl {
         drawProgressLine(smallerRect)
     }
     
-    // MARK: Configuration
-    func configure(value: CGFloat) {
-        self.value = value
+    // MARK: Interface
+    func configure(value: Float) {
+        guard !isTracking else { return }
+        self.value = CGFloat(value)
         setNeedsDisplay()
     }
     
@@ -66,12 +70,6 @@ extension TrackTimelineControl {
         guard handleLayer.path?.contains(pointInView) ?? false else {
             return false
         }
-        
-        let yPos = pointInView.y - bounds.midY
-        let xPos = pointInView.x - bounds.midX
-        let angle = atan2(yPos, xPos) - startAngle
-        let fraction = angle / (2 * .pi)
-        valueDifference = fraction - value
         return true
     }
     
@@ -80,8 +78,11 @@ extension TrackTimelineControl {
         let yPos = pointInView.y - bounds.midY
         let xPos = pointInView.x - bounds.midX
         let angle = atan2(yPos, xPos) - startAngle
-        let fraction = angle / (2 * .pi)
-        value = fraction - valueDifference
+        let normalizedAngle = angle < 0 ? angle + 2 * .pi : angle
+        
+        let fraction = normalizedAngle / (2 * .pi)
+        value = max(0, min(1, fraction))
+        valueDidChange?(value)
         setNeedsDisplay()
         return true
     }

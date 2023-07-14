@@ -8,6 +8,9 @@
 import UIKit
 
 final class MixingContainer: UIView {
+    // MARK: Callbacks
+    var playbackSpeedValueDidChange: ((Float) -> Void)?
+    
     // MARK: Subviews
     private let trackSpeedLabel = UILabel()
     private let trackSpeedBar = OTOptionControl()
@@ -62,6 +65,11 @@ private extension MixingContainer {
         addSubview(trackSpeedLabel)
         
         // Track Speed Bar
+        trackSpeedBar.configure(initialValue: 1, maxValue: 2)
+        trackSpeedBar.valueDidChange = { [weak self] value in
+            guard let self = self else { return }
+            playbackSpeedValueDidChange?(value)
+        }
         trackSpeedBar.translatesAutoresizingMaskIntoConstraints = false
         addSubview(trackSpeedBar)
     }
