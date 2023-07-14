@@ -9,7 +9,7 @@ import UIKit
 
 final class TrackTimelineControl: UIControl {
     // MARK: Callbacks
-    var valueDidChange: ((Float) -> Void)?
+    var valueDidChange: ((CGFloat) -> Void)?
     
     // MARK: Constants
     let handleRadius: CGFloat = 10
@@ -18,8 +18,8 @@ final class TrackTimelineControl: UIControl {
     let startAngle: CGFloat = -.pi / 2
     
     // MARK: Properties
-    private var value: Float = 0
-    private var valueDifference: Float = 0
+    private var value: CGFloat = 0
+    private var valueDifference: CGFloat = 0
     
     // MARK: Sublayers
     private let handleLayer = CAShapeLayer()
@@ -53,8 +53,8 @@ final class TrackTimelineControl: UIControl {
     // MARK: Interface
     func configure(value: Float) {
         guard !isTracking else { return }
-        self.value = value
-        setNeedsDisplay()
+        //self.value = CGFloat(value)
+        //setNeedsDisplay()
     }
     
     // MARK: Others
@@ -73,9 +73,9 @@ extension TrackTimelineControl {
         
         let yPos = pointInView.y - bounds.midY
         let xPos = pointInView.x - bounds.midX
-        let angle = atan2(yPos, xPos) - startAngle
+        let angle = atan2(yPos, xPos) + startAngle
         let fraction = angle / (2 * .pi)
-        valueDifference = Float(fraction) - value
+        //valueDifference = fraction - value
         return true
     }
     
@@ -83,10 +83,12 @@ extension TrackTimelineControl {
         let pointInView = touch.location(in: self)
         let yPos = pointInView.y - bounds.midY
         let xPos = pointInView.x - bounds.midX
-        let angle = atan2(yPos, xPos) - startAngle
+        let angle = atan2(yPos, xPos) + startAngle
         let fraction = angle / (2 * .pi)
-        value = Float(fraction) - valueDifference
-        valueDidChange?(value)
+        print("\(angle)")
+        print("\(fraction)")
+        //value = fraction - valueDifference
+        //valueDidChange?(value)
         setNeedsDisplay()
         return true
     }
@@ -126,7 +128,7 @@ private extension TrackTimelineControl {
     
     func drawProgressLine(_ rect: CGRect) {
         let color = UIColor("#007AFF") ?? .systemBlue
-        let endAngle: CGFloat = startAngle + 2 * .pi * CGFloat(value)
+        let endAngle: CGFloat = startAngle + 2 * .pi * value
         
         let path = UIBezierPath(
             arcCenter: .init(x: rect.midX, y: rect.midY),

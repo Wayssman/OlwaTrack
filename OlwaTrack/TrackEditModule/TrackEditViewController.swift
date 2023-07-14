@@ -15,7 +15,7 @@ final class TrackEditViewController: UIViewController {
     private let speedControl = AVAudioUnitVarispeed()
     
     // MARK: Properties
-    private let trackUrl: URL
+    private let audioFile: AVAudioFile?
     private var timer: Timer?
     
     // MARK: Subviews
@@ -27,7 +27,7 @@ final class TrackEditViewController: UIViewController {
     
     // MARK: Initializers
     init(trackUrl: URL) {
-        self.trackUrl = trackUrl
+        self.audioFile = try? AVAudioFile(forReading: trackUrl)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -92,7 +92,7 @@ private extension TrackEditViewController {
     }
     
     func prepareAudioEngine() {
-        guard let audioFile = try? AVAudioFile(forReading: trackUrl) else {
+        guard let audioFile = self.audioFile else {
             // Write Error Handling
             dismiss(animated: true)
             return
@@ -147,14 +147,24 @@ private extension TrackEditViewController {
         
         // Timeline Container
         timelinePanel.currentTimeDidChange = { [weak self] timeInSeconds in
-            guard let self = self else { return }
-            AVAudioTime
-            if let sampleRate = self.playerNode.lastRenderTime?.sampleRate {
-                let framePos = AVAudioFramePosition(UInt64(timeInSeconds * sampleRate))
-                let pos = AVAudioTime(sampleTime: framePos, atRate: sampleRate)
-                playerNode.pause()
-                playerNode.play(at: pos)
-            }
+            guard
+                let self = self,
+                let audioFile = self.audioFile
+            else { return }
+            
+            //print("TIME: \(timeInSeconds)")
+            playerNode.stop()
+            let audioSampleRate = audioFile.processingFormat.sampleRate
+            //print("auidoSampleRate = \(audioSampleRate)")
+            let offsetSamples = AVAudioFramePosition(timeInSeconds * audioSampleRate)
+            //print("calculated frames from time \(offsetSamples)")
+            let frameCount = AVAudioFrameCount(audioFile.length)
+            //print("auido length frame count \(frameCount)")
+            let time = AVAudioTime(sampleTime: offsetSamples, atRate: audioSampleRate)
+            //print(time)
+            playerNode.scheduleFile(audioFile, at: time)
+            playerNode.play(at: time)
+        
         }
         timelinePanel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(timelinePanel)

@@ -126,8 +126,8 @@
             filePath = "OlwaTrack/TrackEditModule/Components/TrackTimelineControl.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "139"
-            endingLineNumber = "139"
+            startingLineNumber = "141"
+            endingLineNumber = "141"
             landmarkName = "drawProgressLine(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -206,8 +206,8 @@
             filePath = "OlwaTrack/TrackEditModule/Components/TrackTimelineControl.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "121"
-            endingLineNumber = "121"
+            startingLineNumber = "123"
+            endingLineNumber = "123"
             landmarkName = "drawBackgroundLine(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -414,8 +414,8 @@
             filePath = "OlwaTrack/TrackEditModule/TrackEditViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "191"
-            endingLineNumber = "191"
+            startingLineNumber = "201"
+            endingLineNumber = "201"
             landmarkName = "setup()"
             landmarkType = "7">
          </BreakpointContent>
@@ -498,54 +498,6 @@
             endingLineNumber = "63"
             landmarkName = "refreshTimeLabels(timeLeft:timeRemains:)"
             landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "05519642-16B4-4686-8FFB-829EE55B7625"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "OlwaTrack/TrackEditModule/TrackEditViewController.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "152"
-            endingLineNumber = "152"
-            landmarkName = "setup()"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "05519642-16B4-4686-8FFB-829EE55B7625 - 4780772e2be7c7d2"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (Swift.Double) -&gt; () in OlwaTrack.TrackEditViewController.setup() -&gt; ()"
-                  moduleName = "OlwaTrack"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/av_zhelanov/Documents/OlwaTrack/OlwaTrack/TrackEditModule/TrackEditViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "151"
-                  endingLineNumber = "151"
-                  offsetFromSymbolStart = "228">
-               </Location>
-               <Location
-                  uuid = "05519642-16B4-4686-8FFB-829EE55B7625 - 4780772e2be7c7d2"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (Swift.Double) -&gt; () in OlwaTrack.TrackEditViewController.setup() -&gt; ()"
-                  moduleName = "OlwaTrack"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/av_zhelanov/Documents/OlwaTrack/OlwaTrack/TrackEditModule/TrackEditViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "151"
-                  endingLineNumber = "151"
-                  offsetFromSymbolStart = "424">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
