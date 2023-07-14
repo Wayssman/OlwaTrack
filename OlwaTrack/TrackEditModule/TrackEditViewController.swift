@@ -17,6 +17,7 @@ final class TrackEditViewController: UIViewController {
     // MARK: Properties
     private let audioFile: AVAudioFile?
     private var timer: Timer?
+    private var audioFileScheduleOffset: TimeInterval = 0
     
     // MARK: Subviews
     private let exportButton = UIButton()
@@ -68,9 +69,24 @@ private extension TrackEditViewController {
             try audioEngine.start()
             playerNode.play()
             timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { [weak self] timer in
-                guard let self = self else { return }
-                self.timelinePanel.update(currentTimeInSeconds: self.getPlayerTime())
+                guard
+                    let self = self,
+                    let audioFile = audioFile
+                else { return }
+                
+                let audioLengthSamples = audioFile.length
+                let audioSampleRate = audioFile.processingFormat.sampleRate
+                let audioLengthInSeconds = Double(audioLengthSamples) / audioSampleRate
+                
+                let fullPlayingTime = self.getPlayerTime() + audioFileScheduleOffset
+                if fullPlayingTime > audioLengthInSeconds {
+                    stopAudio()
+                    prepareAudioEngine()
+                } else {
+                    self.timelinePanel.update(currentTimeInSeconds: self.getPlayerTime() + audioFileScheduleOffset)
+                }
             })
+            playbackControlsPanel.setState(isPlaying: true)
         } catch {
             print(error)
             /* Handle the error. */
@@ -78,6 +94,7 @@ private extension TrackEditViewController {
     }
     
     func pauseAudio() {
+        playbackControlsPanel.setState(isPlaying: false)
         timer?.invalidate()
         timer = nil
         playerNode.pause()
@@ -85,6 +102,7 @@ private extension TrackEditViewController {
     }
     
     func stopAudio() {
+        playbackControlsPanel.setState(isPlaying: false)
         timer?.invalidate()
         timer = nil
         playerNode.stop()
@@ -104,6 +122,7 @@ private extension TrackEditViewController {
         audioEngine.connect(speedControl, to: audioEngine.mainMixerNode, format: audioFile.processingFormat)
         
         playerNode.scheduleFile(audioFile, at: nil)
+        audioFileScheduleOffset = 0
         
         let audioLengthSamples = audioFile.length
         let audioSampleRate = audioFile.processingFormat.sampleRate
@@ -152,18 +171,22 @@ private extension TrackEditViewController {
                 let audioFile = self.audioFile
             else { return }
             
-            //print("TIME: \(timeInSeconds)")
             playerNode.stop()
+            
             let audioSampleRate = audioFile.processingFormat.sampleRate
-            //print("auidoSampleRate = \(audioSampleRate)")
             let offsetSamples = AVAudioFramePosition(timeInSeconds * audioSampleRate)
-            //print("calculated frames from time \(offsetSamples)")
             let frameCount = AVAudioFrameCount(audioFile.length)
-            //print("auido length frame count \(frameCount)")
-            let time = AVAudioTime(sampleTime: offsetSamples, atRate: audioSampleRate)
-            //print(time)
-            playerNode.scheduleFile(audioFile, at: time)
-            playerNode.play(at: time)
+            let newFrameCount = frameCount - AVAudioFrameCount(offsetSamples)
+            
+            playerNode.scheduleSegment(
+                audioFile,
+                startingFrame: offsetSamples,
+                frameCount: newFrameCount,
+                at: nil
+            )
+            audioFileScheduleOffset = timeInSeconds
+            
+            playerNode.play()
         
         }
         timelinePanel.translatesAutoresizingMaskIntoConstraints = false
@@ -200,10 +223,8 @@ private extension TrackEditViewController {
         playbackControlsPanel.didMainButtonTapped = { [weak self] in
             guard let self = self else { return }
             if playerNode.isPlaying {
-                self.playbackControlsPanel.setState(isPlaying: false)
                 pauseAudio()
             } else {
-                self.playbackControlsPanel.setState(isPlaying: true)
                 playAudio()
             }
         }

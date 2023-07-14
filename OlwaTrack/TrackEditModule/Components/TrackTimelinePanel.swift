@@ -42,7 +42,7 @@ final class TrackTimelinePanel: UIView {
     func update(currentTimeInSeconds: TimeInterval) {
         self.currentTimeInSeconds = currentTimeInSeconds
         let timeRemains = lengthInSeconds - currentTimeInSeconds
-        refreshTimeLabels(timeLeft: 0, timeRemains: timeRemains)
+        refreshTimeLabels(timeLeft: currentTimeInSeconds, timeRemains: timeRemains)
         timeline.configure(value: Float(currentTimeInSeconds/lengthInSeconds))
     }
     
@@ -59,8 +59,8 @@ private extension TrackTimelinePanel {
         formatter.allowedUnits = [.hour, .minute, .second]
         formatter.zeroFormattingBehavior = .pad
         
-        leftTimeLabel.text = formatter.string(from: timeLeft)
-        remainTimeLabel.text = "-" + (formatter.string(from: timeRemains) ?? "")
+        leftTimeLabel.text = formatter.string(from: timeLeft.rounded(.up))
+        remainTimeLabel.text = "-" + (formatter.string(from: timeRemains.rounded(.up)) ?? "")
     }
     
     
