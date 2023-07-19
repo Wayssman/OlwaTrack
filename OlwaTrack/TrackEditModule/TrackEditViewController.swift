@@ -9,6 +9,9 @@ import UIKit
 import AVFoundation
 
 final class TrackEditViewController: UIViewController {
+    // MARK: Constants
+    let nameOfDirectoryForExport = "OlwaTrackForExport"
+    
     // MARK: Dependencies
     private let audioEngine = AVAudioEngine()
     private let playerNode = AVAudioPlayerNode()
@@ -48,6 +51,13 @@ final class TrackEditViewController: UIViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         stopAudio()
+    }
+}
+
+
+extension TrackEditViewController: UIDocumentPickerDelegate {
+    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        print(urls.first)
     }
 }
 
@@ -129,6 +139,146 @@ private extension TrackEditViewController {
         let audioLengthInSeconds = Double(audioLengthSamples) / audioSampleRate
         
         timelinePanel.configure(lengthInSeconds: audioLengthInSeconds)
+        
+        /*
+         timelinePanel.currentTimeDidChange = { [weak self] timeInSeconds in
+             guard
+                 let self = self,
+                 let audioFile = self.audioFile
+             else { return }
+             
+             playerNode.stop()
+             
+             let audioSampleRate = audioFile.processingFormat.sampleRate
+             let offsetSamples = AVAudioFramePosition(timeInSeconds * audioSampleRate)
+             let frameCount = AVAudioFrameCount(audioFile.length)
+             let newFrameCount = frameCount - AVAudioFrameCount(offsetSamples)
+             
+             playerNode.scheduleSegment(
+                 audioFile,
+                 startingFrame: offsetSamples,
+                 frameCount: newFrameCount,
+                 at: nil
+             )
+             audioFileScheduleOffset = timeInSeconds
+             
+         
+         timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { [weak self] timer in
+             guard
+                 let self = self,
+                 let audioFile = audioFile
+             else { return }
+             
+             let audioLengthSamples = audioFile.length
+             let audioSampleRate = audioFile.processingFormat.sampleRate
+             let audioLengthInSeconds = Double(audioLengthSamples) / audioSampleRate
+             
+             let fullPlayingTime = self.getPlayerTime() + audioFileScheduleOffset
+             if fullPlayingTime > audioLengthInSeconds {
+                 stopAudio()
+                 prepareAudioEngine()
+             } else {
+                 self.timelinePanel.update(currentTimeInSeconds: self.getPlayerTime() + audioFileScheduleOffset)
+             }
+         */
+    }
+    
+    func renderToFile() {
+        guard
+            let audioFile = audioFile,
+            let documentsUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+        else {
+            // TODO: Write Error Handling
+            return
+        }
+        
+        audioFileScheduleOffset += getPlayerTime()
+        stopAudio()
+        playerNode.scheduleFile(audioFile, at: nil)
+        
+        do {
+            let maxFrames: AVAudioFrameCount = 4096
+            try audioEngine.enableManualRenderingMode(
+                .offline,
+                format: audioFile.processingFormat,
+                maximumFrameCount: maxFrames
+            )
+            try audioEngine.start()
+            playerNode.play()
+        } catch {
+            // TODO: Write Error Handling
+        }
+        
+        let buffer = AVAudioPCMBuffer(
+            pcmFormat: audioEngine.manualRenderingFormat,
+            frameCapacity: audioEngine.manualRenderingMaximumFrameCount
+        )!
+        
+        let newDirectoryUrl = documentsUrl.appendingPathComponent(nameOfDirectoryForExport, isDirectory: true)
+        try? FileManager.default.createDirectory(at: newDirectoryUrl, withIntermediateDirectories: false)
+        
+        let outputUrl = newDirectoryUrl.appendingPathComponent("Exported.mp3")
+        var settings: [String : Any] = [:]
+        settings[AVFormatIDKey] = kAudioFormatAppleIMA4
+        settings[AVAudioFileTypeKey] = kAudioFileCAFType
+        settings[AVSampleRateKey] = buffer.format.sampleRate
+        settings[AVNumberOfChannelsKey] = 2
+        settings[AVLinearPCMIsFloatKey] = (buffer.format.commonFormat == .pcmFormatInt32)
+                                           
+        guard let outputFile = try? AVAudioFile(forWriting: outputUrl, settings: settings, commonFormat: buffer.format.commonFormat, interleaved: buffer.format.isInterleaved) else {
+            // TODO: Write Error Handling
+            return
+        }
+        
+        while audioEngine.manualRenderingSampleTime < audioFile.length {
+            do {
+                let frameCount = audioFile.length - audioEngine.manualRenderingSampleTime
+                let framesToRender = min(AVAudioFrameCount(frameCount), buffer.frameCapacity)
+                
+                let status = try audioEngine.renderOffline(framesToRender, to: buffer)
+                
+                switch status {
+                case .success:
+                    try outputFile.write(from: buffer)
+                case .error:
+                    // TODO: Write Error Handling
+                    return
+                default:
+                    break
+                }
+            } catch {
+                // TODO: Write Error Handling
+                return
+            }
+        }
+        
+        playerNode.stop()
+        audioEngine.stop()
+        audioEngine.disableManualRenderingMode()
+        
+        runExportActivity(url: outputUrl)
+        
+        let audioSampleRate = audioFile.processingFormat.sampleRate
+        let offsetSamples = AVAudioFramePosition(audioFileScheduleOffset * audioSampleRate)
+        let frameCount = AVAudioFrameCount(audioFile.length)
+        let newFrameCount = frameCount - AVAudioFrameCount(offsetSamples)
+        
+        playerNode.scheduleSegment(
+            audioFile,
+            startingFrame: offsetSamples,
+            frameCount: newFrameCount,
+            at: nil
+        )
+    }
+    
+    func runExportActivity(url: URL) {
+        let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+        present(activityViewController, animated: true)
+    }
+    
+    // MARK: User Interactivity
+    @objc func exportTapped() {
+        renderToFile()
     }
     
     // MARK: Layout
@@ -217,6 +367,7 @@ private extension TrackEditViewController {
         exportButton.titleEdgeInsets = .init(top: 0, left: 0, bottom: 0, right: 12)
         exportButton.semanticContentAttribute = .forceRightToLeft
         exportButton.translatesAutoresizingMaskIntoConstraints = false
+        exportButton.addTarget(self, action: #selector(exportTapped), for: .touchUpInside)
         view.addSubview(exportButton)
         
         // Playback Controls Panel
