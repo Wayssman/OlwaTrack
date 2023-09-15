@@ -48,8 +48,7 @@ extension ImportedTracksViewController: UICollectionViewDataSource {
 
 extension ImportedTracksViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let url = tracksFiles[indexPath.row]
-        presentTrackEdit(url: url)
+        presentTrackEdit(trackIndex: indexPath.row, trackList: tracksFiles)
     }
 }
 
@@ -74,8 +73,9 @@ extension ImportedTracksViewController: UIDocumentPickerDelegate {
 
 private extension ImportedTracksViewController {
     // MARK: Internal
-    func presentTrackEdit(url: URL) {
-        let trackEditViewController = TrackEditViewController(trackUrl: url)
+    func presentTrackEdit(trackIndex: Int, trackList: [URL]) {
+        let trackEditViewController = TrackEditViewController(trackIndex: trackIndex, trackList: trackList)
+        trackEditViewController.modalPresentationStyle = .pageSheet
         present(trackEditViewController, animated: true)
     }
     
