@@ -54,71 +54,8 @@ final class TrackEditViewController: UIViewController {
     }
 }
 
-
-extension TrackEditViewController: UIDocumentPickerDelegate {
-    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        print(urls.first)
-    }
-}
-
 private extension TrackEditViewController {
     // MARK: Internal
-    func getPlayerTime() -> TimeInterval {
-        guard
-            let nodeTime = playerNode.lastRenderTime,
-            let playerTime = playerNode.playerTime(forNodeTime: nodeTime)
-        else {
-            return 0
-        }
-        
-        return Double(playerTime.sampleTime) / playerTime.sampleRate
-    }
-    
-    func playAudio() {
-        do {
-            try audioEngine.start()
-            playerNode.play()
-            timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { [weak self] timer in
-                guard
-                    let self = self,
-                    let audioFile = audioFile
-                else { return }
-                
-                let audioLengthSamples = audioFile.length
-                let audioSampleRate = audioFile.processingFormat.sampleRate
-                let audioLengthInSeconds = Double(audioLengthSamples) / audioSampleRate
-                
-                let fullPlayingTime = self.getPlayerTime() + audioFileScheduleOffset
-                if fullPlayingTime > audioLengthInSeconds {
-                    stopAudio()
-                    prepareAudioEngine()
-                } else {
-                    self.timelinePanel.update(currentTimeInSeconds: self.getPlayerTime() + audioFileScheduleOffset)
-                }
-            })
-            playbackControlsPanel.setState(isPlaying: true)
-        } catch {
-            print(error)
-            /* Handle the error. */
-        }
-    }
-    
-    func pauseAudio() {
-        playbackControlsPanel.setState(isPlaying: false)
-        timer?.invalidate()
-        timer = nil
-        playerNode.pause()
-        audioEngine.pause()
-    }
-    
-    func stopAudio() {
-        playbackControlsPanel.setState(isPlaying: false)
-        timer?.invalidate()
-        timer = nil
-        playerNode.stop()
-        audioEngine.stop()
-    }
-    
     func prepareAudioEngine() {
         guard let audioFile = self.audioFile else {
             // Write Error Handling
@@ -131,56 +68,31 @@ private extension TrackEditViewController {
         audioEngine.connect(playerNode, to: speedControl, format: audioFile.processingFormat)
         audioEngine.connect(speedControl, to: audioEngine.mainMixerNode, format: audioFile.processingFormat)
         
-        playerNode.scheduleFile(audioFile, at: nil)
-        audioFileScheduleOffset = 0
-        
-        let audioLengthSamples = audioFile.length
+        scheduleAudioFile(from: nil)
+    }
+    
+    func scheduleAudioFile(from timeInSeconds: TimeInterval?) {
+        guard let audioFile = audioFile else { return }
         let audioSampleRate = audioFile.processingFormat.sampleRate
-        let audioLengthInSeconds = Double(audioLengthSamples) / audioSampleRate
-        
-        timelinePanel.configure(lengthInSeconds: audioLengthInSeconds)
-        
-        /*
-         timelinePanel.currentTimeDidChange = { [weak self] timeInSeconds in
-             guard
-                 let self = self,
-                 let audioFile = self.audioFile
-             else { return }
-             
-             playerNode.stop()
-             
-             let audioSampleRate = audioFile.processingFormat.sampleRate
-             let offsetSamples = AVAudioFramePosition(timeInSeconds * audioSampleRate)
-             let frameCount = AVAudioFrameCount(audioFile.length)
-             let newFrameCount = frameCount - AVAudioFrameCount(offsetSamples)
-             
-             playerNode.scheduleSegment(
-                 audioFile,
-                 startingFrame: offsetSamples,
-                 frameCount: newFrameCount,
-                 at: nil
-             )
-             audioFileScheduleOffset = timeInSeconds
-             
-         
-         timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { [weak self] timer in
-             guard
-                 let self = self,
-                 let audioFile = audioFile
-             else { return }
-             
-             let audioLengthSamples = audioFile.length
-             let audioSampleRate = audioFile.processingFormat.sampleRate
-             let audioLengthInSeconds = Double(audioLengthSamples) / audioSampleRate
-             
-             let fullPlayingTime = self.getPlayerTime() + audioFileScheduleOffset
-             if fullPlayingTime > audioLengthInSeconds {
-                 stopAudio()
-                 prepareAudioEngine()
-             } else {
-                 self.timelinePanel.update(currentTimeInSeconds: self.getPlayerTime() + audioFileScheduleOffset)
-             }
-         */
+
+        if let timeInSeconds = timeInSeconds {
+            let offsetSamples = AVAudioFramePosition(audioSampleRate * timeInSeconds)
+            let frameCount = AVAudioFrameCount(audioFile.length)
+            let newFrameCount = frameCount - AVAudioFrameCount(offsetSamples)
+            
+            playerNode.scheduleSegment(
+                audioFile,
+                startingFrame: offsetSamples,
+                frameCount: newFrameCount,
+                at: nil
+            )
+        } else {
+            let audioLengthInSeconds = Double(audioFile.length) / audioSampleRate
+            
+            playerNode.scheduleFile(audioFile, at: nil)
+            audioFileScheduleOffset = 0
+            timelinePanel.configure(lengthInSeconds: audioLengthInSeconds)
+        }
     }
     
     func renderToFile() {
@@ -257,23 +169,82 @@ private extension TrackEditViewController {
         audioEngine.disableManualRenderingMode()
         
         runExportActivity(url: outputUrl)
-        
-        let audioSampleRate = audioFile.processingFormat.sampleRate
-        let offsetSamples = AVAudioFramePosition(audioFileScheduleOffset * audioSampleRate)
-        let frameCount = AVAudioFrameCount(audioFile.length)
-        let newFrameCount = frameCount - AVAudioFrameCount(offsetSamples)
-        
-        playerNode.scheduleSegment(
-            audioFile,
-            startingFrame: offsetSamples,
-            frameCount: newFrameCount,
-            at: nil
-        )
+        scheduleAudioFile(from: audioFileScheduleOffset)
     }
     
     func runExportActivity(url: URL) {
         let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
         present(activityViewController, animated: true)
+    }
+    
+    // MARK: Player
+    func getPlayerTime() -> TimeInterval {
+        guard
+            let nodeTime = playerNode.lastRenderTime,
+            let playerTime = playerNode.playerTime(forNodeTime: nodeTime)
+        else {
+            return 0
+        }
+        
+        return Double(playerTime.sampleTime) / playerTime.sampleRate
+    }
+    
+    func playAudio() {
+        do {
+            try audioEngine.start()
+            playerNode.play()
+            scheduleTimer()
+            playbackControlsPanel.setState(isPlaying: true)
+        } catch {
+            print(error)
+            /* Handle the error. */
+        }
+    }
+    
+    func pauseAudio() {
+        playbackControlsPanel.setState(isPlaying: false)
+        timer?.invalidate()
+        timer = nil
+        playerNode.pause()
+        audioEngine.pause()
+    }
+    
+    func stopAudio() {
+        playbackControlsPanel.setState(isPlaying: false)
+        timer?.invalidate()
+        timer = nil
+        playerNode.stop()
+        audioEngine.stop()
+    }
+    
+    // MARK: Timer
+    func scheduleTimer() {
+        if timer != nil {
+            timer?.invalidate()
+            timer = nil
+        }
+        
+        timer = Timer.scheduledTimer(
+            timeInterval: 1.0,
+            target: self,
+            selector: #selector(timerUpdate),
+            userInfo: nil,
+            repeats: true
+        )
+    }
+    
+    @objc func timerUpdate() {
+        guard let audioFile = audioFile else { return }
+        let audioSampleRate = audioFile.processingFormat.sampleRate
+        let audioLengthInSeconds = Double(audioFile.length) / audioSampleRate
+        
+        let fullPlayingTime = self.getPlayerTime() + audioFileScheduleOffset
+        if fullPlayingTime > audioLengthInSeconds {
+            stopAudio()
+            prepareAudioEngine()
+        } else {
+            self.timelinePanel.update(currentTimeInSeconds: self.getPlayerTime() + audioFileScheduleOffset)
+        }
     }
     
     // MARK: User Interactivity
@@ -316,26 +287,11 @@ private extension TrackEditViewController {
         
         // Timeline Container
         timelinePanel.currentTimeDidChange = { [weak self] timeInSeconds in
-            guard
-                let self = self,
-                let audioFile = self.audioFile
-            else { return }
+            guard let self = self else { return }
             
             playerNode.stop()
-            
-            let audioSampleRate = audioFile.processingFormat.sampleRate
-            let offsetSamples = AVAudioFramePosition(timeInSeconds * audioSampleRate)
-            let frameCount = AVAudioFrameCount(audioFile.length)
-            let newFrameCount = frameCount - AVAudioFrameCount(offsetSamples)
-            
-            playerNode.scheduleSegment(
-                audioFile,
-                startingFrame: offsetSamples,
-                frameCount: newFrameCount,
-                at: nil
-            )
+            scheduleAudioFile(from: timeInSeconds)
             audioFileScheduleOffset = timeInSeconds
-            
             playerNode.play()
         
         }
