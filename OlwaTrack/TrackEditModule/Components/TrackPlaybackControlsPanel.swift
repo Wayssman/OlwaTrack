@@ -9,7 +9,9 @@ import UIKit
 
 final class TrackPlaybackControlsPanel: UIView {
     // MARK: Callbacks
+    var didPreviousButtonTapped: (() -> Void)?
     var didMainButtonTapped: (() -> Void)?
+    var didNextButtonTapped: (() -> Void)?
     
     // MARK: Subviews
     private let playerButtonsStack = UIStackView()
@@ -43,8 +45,16 @@ final class TrackPlaybackControlsPanel: UIView {
 
 private extension TrackPlaybackControlsPanel {
     // MARK: User Interactive
+    @objc func previousButtonTapped() {
+        didPreviousButtonTapped?()
+    }
+    
     @objc func mainButtonTapped() {
         didMainButtonTapped?()
+    }
+    
+    @objc func nextButtonTapped() {
+        didNextButtonTapped?()
     }
     
     // MARK: Layout
@@ -71,6 +81,8 @@ private extension TrackPlaybackControlsPanel {
         previousButton.setImage(previousButtonImage, for: [])
         previousButton.tintColor = .systemBlue
         previousButton.adjustsImageWhenHighlighted = false
+        previousButton.addTarget(self, action: #selector(previousButtonTapped), for: .touchUpInside)
+        
         previousButton.translatesAutoresizingMaskIntoConstraints = false
         playerButtonsStack.addArrangedSubview(previousButton)
         
@@ -89,6 +101,8 @@ private extension TrackPlaybackControlsPanel {
         nextButton.setImage(nextButtonImage, for: [])
         nextButton.tintColor = .systemBlue
         nextButton.adjustsImageWhenHighlighted = false
+        nextButton.addTarget(self, action: #selector(nextButtonTapped), for: .touchUpInside)
+        
         nextButton.translatesAutoresizingMaskIntoConstraints = false
         playerButtonsStack.addArrangedSubview(nextButton)
     }

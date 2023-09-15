@@ -18,7 +18,9 @@ final class TrackEditViewController: UIViewController {
     private let speedControl = AVAudioUnitVarispeed()
     
     // MARK: Properties
-    private let audioFile: AVAudioFile?
+    private var trackIndex: Int
+    private var trackList: [URL]
+    private var audioFile: AVAudioFile?
     private var timer: Timer?
     private var audioFileScheduleOffset: TimeInterval = 0
     
@@ -30,8 +32,10 @@ final class TrackEditViewController: UIViewController {
     private let mixingContainer = MixingContainer()
     
     // MARK: Initializers
-    init(trackUrl: URL) {
-        self.audioFile = try? AVAudioFile(forReading: trackUrl)
+    init(trackIndex: Int, trackList: [URL]) {
+        self.trackIndex = trackIndex
+        self.trackList = trackList
+        
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -44,8 +48,11 @@ final class TrackEditViewController: UIViewController {
         super.viewDidLoad()
         setup()
         layout()
-        
-        prepareAudioEngine()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        prepareTrackFile()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -56,6 +63,20 @@ final class TrackEditViewController: UIViewController {
 
 private extension TrackEditViewController {
     // MARK: Internal
+    func prepareTrackFile() {
+        guard
+            trackIndex >= 0 && trackIndex < trackList.count,
+            let trackFile = try? AVAudioFile(forReading: trackList[trackIndex])
+        else {
+            dismiss(animated: true)
+            return
+        }
+        trackTitleLabel.text = 
+        audioEngine.reset()
+        self.audioFile = trackFile
+        prepareAudioEngine()
+    }
+    
     func prepareAudioEngine() {
         guard let audioFile = self.audioFile else {
             // Write Error Handling
@@ -190,6 +211,7 @@ private extension TrackEditViewController {
     }
     
     func playAudio() {
+        guard audioFile != nil else { return }
         do {
             try audioEngine.start()
             playerNode.play()
@@ -289,11 +311,15 @@ private extension TrackEditViewController {
         timelinePanel.currentTimeDidChange = { [weak self] timeInSeconds in
             guard let self = self else { return }
             
-            playerNode.stop()
-            scheduleAudioFile(from: timeInSeconds)
-            audioFileScheduleOffset = timeInSeconds
-            playerNode.play()
-        
+            do {
+                try audioEngine.start()
+                playerNode.stop()
+                scheduleAudioFile(from: timeInSeconds)
+                audioFileScheduleOffset = timeInSeconds
+                playerNode.play()
+            } catch {
+                
+            }
         }
         timelinePanel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(timelinePanel)
@@ -327,6 +353,15 @@ private extension TrackEditViewController {
         view.addSubview(exportButton)
         
         // Playback Controls Panel
+        playbackControlsPanel.didPreviousButtonTapped = { [weak self] in
+            guard let self = self else { return }
+            if trackIndex - 1 >= 0 {
+                stopAudio()
+                trackIndex -= 1
+                prepareTrackFile()
+            }
+        }
+        
         playbackControlsPanel.didMainButtonTapped = { [weak self] in
             guard let self = self else { return }
             if playerNode.isPlaying {
@@ -336,13 +371,21 @@ private extension TrackEditViewController {
             }
         }
         
+        playbackControlsPanel.didNextButtonTapped = { [weak self] in
+            guard let self = self else { return }
+            if trackIndex + 1 < trackList.count {
+                stopAudio()
+                trackIndex += 1
+                prepareTrackFile()
+            }
+        }
+        
         playbackControlsPanel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(playbackControlsPanel)
         
         // Mixing Container
         mixingContainer.playbackSpeedValueDidChange = { [weak self] value in
             guard let self = self else { return }
-            print(value)
             speedControl.rate = value
         }
         
