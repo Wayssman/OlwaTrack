@@ -71,7 +71,6 @@ private extension TrackEditViewController {
             dismiss(animated: true)
             return
         }
-        trackTitleLabel.text = 
         audioEngine.reset()
         self.audioFile = trackFile
         prepareAudioEngine()
