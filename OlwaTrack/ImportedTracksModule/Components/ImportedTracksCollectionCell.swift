@@ -8,14 +8,23 @@
 import UIKit
 import AVFoundation
 
+protocol ImportedTracksCollectionCellDelegate: AnyObject {
+    func didRemoveButtonTap()
+}
+
 final class ImportedTracksCollectionCell: UICollectionViewCell {
+    // MARK: Delegates
+    weak var delegate: ImportedTracksCollectionCellDelegate?
+    
     // MARK: Properties
-    private var trackUrl: URL?
+    private var trackFile: ImportedTrackFile?
     
     // MARK: Subviews
-    private let trackPreviewContainer = UIView()
     private let trackPreview = UIImageView()
-    private let trackTitle = UILabel()
+    private let trackInfoStack = UIStackView()
+        private let trackTitle = UILabel()
+        private let trackLength = UILabel()
+    private let trackRemoveButton = UIButton()
     
     // MARK: Initializers
     override init(frame: CGRect) {
@@ -33,120 +42,105 @@ final class ImportedTracksCollectionCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         
-        trackUrl = nil
+        trackFile = nil
         trackPreview.image = nil
         trackTitle.text = ""
     }
     
     // MARK: Interface
-    func configure(trackUrl: URL) {
-        self.trackUrl = trackUrl
-        loadFileInfo()
+    func configure(trackFile: ImportedTrackFile) {
+        self.trackFile = trackFile
+        
+        var finalTitleText = ""
+        if let artist = trackFile.info.artist {
+            finalTitleText += "\(artist) – "
+        }
+        finalTitleText += trackFile.info.title ?? trackFile.fileName
+        
+        let sampleRate = trackFile.audioFile.processingFormat.sampleRate
+        let audioLength = Double(trackFile.audioFile.length)
+        let seconds = audioLength / sampleRate
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.hour, .minute, .second]
+        formatter.unitsStyle = .positional
+        let trackLength = formatter.string(from: seconds) ?? "00:00"
+        
+        fillContent(
+            preview: trackFile.info.artwork,
+            title: finalTitleText,
+            length: trackLength
+        )
     }
 }
 
 private extension ImportedTracksCollectionCell {
     // MARK: Internal
-    func fillContent(title: String, artist: String?, artwork: Data?) {
-        var finalTitleText = ""
-        if let artist = artist {
-            finalTitleText += "\(artist) – "
-        }
-        finalTitleText += title
-        trackTitle.text = finalTitleText
-        
-        if let artwork = artwork {
-            trackPreview.image = UIImage(data: artwork)
-        } else {
-            trackPreview.image = UIImage(named: "ColoredPlaceholder")
-        }
-    }
-    
-    func loadFileInfo() {
-        guard let trackUrl = trackUrl else {
-            // TODO: Write Error Handling
-            fillContent(title: "Unknown", artist: nil, artwork: nil)
-            return
-        }
-        
-        let asset = AVAsset(url: trackUrl)
-        let metadataItems = asset.metadata
-        
-        var titleAssetValue: String?
-        var artistAssetValue: String?
-        var artworkAssetValue: Data?
-        
-        for item in metadataItems {
-            guard
-                let key = item.commonKey?.rawValue,
-                let value = item.value
-            else { continue }
-            
-            switch key {
-            case "title":
-                titleAssetValue = value as? String
-            case "artist":
-                artistAssetValue = value as? String
-            case "artwork":
-                artworkAssetValue = value as? Data
-            default:
-                break
-            }
-        }
-        
-        fillContent(
-            title: titleAssetValue ?? trackUrl.deletingPathExtension().lastPathComponent,
-            artist: artistAssetValue,
-            artwork: artworkAssetValue
-        )
+    func fillContent(preview: Data?, title: String, length: String) {
+        trackPreview.image = UIImage(data: preview ?? Data())
+        trackTitle.text = title
+        trackLength.text = length
     }
     
     // MARK: Layout
     func layout() {
         NSLayoutConstraint.activate([
-            trackPreviewContainer.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 13),
-            trackPreviewContainer.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12.5),
-            trackPreviewContainer.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -13),
-            trackPreviewContainer.widthAnchor.constraint(equalTo: trackPreviewContainer.heightAnchor),
-                
-                trackPreview.topAnchor.constraint(equalTo: trackPreviewContainer.topAnchor),
-                trackPreview.leadingAnchor.constraint(equalTo: trackPreviewContainer.leadingAnchor),
-                trackPreview.trailingAnchor.constraint(equalTo: trackPreviewContainer.trailingAnchor),
-                trackPreview.bottomAnchor.constraint(equalTo: trackPreviewContainer.bottomAnchor),
+            trackPreview.centerYAnchor.constraint(equalTo: centerYAnchor),
+            trackPreview.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
+            trackPreview.widthAnchor.constraint(equalToConstant: 56),
+            trackPreview.heightAnchor.constraint(equalToConstant: 56),
             
-            trackTitle.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 13),
-            trackTitle.leadingAnchor.constraint(equalTo: trackPreview.trailingAnchor, constant: 10),
-            trackTitle.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12.5),
-            trackTitle.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -13)
+            trackInfoStack.centerYAnchor.constraint(equalTo: centerYAnchor),
+            trackInfoStack.leadingAnchor.constraint(equalTo: trackPreview.trailingAnchor, constant: 10),
+            trackInfoStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -57),
+            
+            trackRemoveButton.centerYAnchor.constraint(equalTo: centerYAnchor),
+            trackRemoveButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
+            trackRemoveButton.heightAnchor.constraint(equalToConstant: 20),
+            trackRemoveButton.widthAnchor.constraint(equalToConstant: 17)
         ])
     }
     
     // MARK: Setup
     func setup() {
-        // Track Preview Container
-        trackPreviewContainer.backgroundColor = .white
-        trackPreviewContainer.layer.cornerRadius = 8
-        trackPreviewContainer.layer.shadowOffset = .init(width: 0, height: 0)
-        trackPreviewContainer.layer.shadowColor = UIColor.black.cgColor
-        trackPreviewContainer.layer.shadowRadius = 4
-        trackPreviewContainer.layer.shadowOpacity = 0.25
-        trackPreviewContainer.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(trackPreviewContainer)
-        
         // Track Preview
         trackPreview.layer.cornerRadius = 8
         trackPreview.contentMode = .scaleAspectFit
         trackPreview.layer.masksToBounds = true
+        trackPreview.backgroundColor = UIColor("#F2E4CE")
+        
         trackPreview.translatesAutoresizingMaskIntoConstraints = false
-        trackPreviewContainer.addSubview(trackPreview)
+        addSubview(trackPreview)
+        
+        // Track Info Stack
+        trackInfoStack.axis = .vertical
+        trackInfoStack.spacing = 10
+        
+        trackInfoStack.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(trackInfoStack)
         
         // Track Title
-        trackTitle.numberOfLines = 0
-        trackTitle.contentMode = .center
+        trackTitle.numberOfLines = 2
         trackTitle.textAlignment = .left
-        trackTitle.font = .systemFont(ofSize: 16, weight: .bold)
-        trackTitle.textColor = .black
+        trackTitle.font = .systemFont(ofSize: 16, weight: .regular)
+        trackTitle.textColor = UIColor("#3A3A3C")
+        
         trackTitle.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(trackTitle)
+        trackInfoStack.addArrangedSubview(trackTitle)
+        
+        // Track Length
+        trackLength.numberOfLines = 1
+        trackLength.textAlignment = .left
+        trackLength.font = .systemFont(ofSize: 12, weight: .regular)
+        trackLength.textColor = UIColor("#3A3A3C")?.withAlphaComponent(0.5)
+        
+        trackLength.translatesAutoresizingMaskIntoConstraints = false
+        trackInfoStack.addArrangedSubview(trackLength)
+        
+        // Track Remove Button
+        trackRemoveButton.setImage(UIImage(named: "iconDelete"), for: [])
+        trackRemoveButton.tintColor = UIColor("#3A3A3C")
+        
+        trackRemoveButton.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(trackRemoveButton)
     }
 }
