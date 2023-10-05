@@ -10,8 +10,16 @@ import UIKit
 final class ImportedTracksViewController: UIViewController {
     // MARK: Properties
     private var tracksFiles: [ImportedTrackFile] = []
+    private var filterPhrase: String = ""
+    private var filteredTrackFiles: [ImportedTrackFile] {
+        guard !filterPhrase.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            return tracksFiles
+        }
+        return tracksFiles.filter { ($0.info.title ?? $0.fileName).contains(filterPhrase) }
+    }
 
     // MARK: Subviews
+    private let searchController = UISearchController()
     private let tracksCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.minimumLineSpacing = 0
@@ -40,8 +48,13 @@ extension ImportedTracksViewController: ImportedTracksCollectionHeaderDelegate {
 
 // MARK: - ImportedTracksCollectionCellDelegate
 extension ImportedTracksViewController: ImportedTracksCollectionCellDelegate {
-    func didRemoveButtonTap() {
-        // TODO: Append
+    func didRemoveTrackFile(_ trackFile: ImportedTrackFile) {
+        do {
+            try TrackFileService.shared.deleteFile(at: trackFile.url)
+            updateImportedFiles()
+        } catch {
+            // TODO: Wirte Error Handling
+        }
     }
 }
 
@@ -51,12 +64,12 @@ extension ImportedTracksViewController: UICollectionViewDataSource {
         return 1
     }
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return tracksFiles.count
+        return filteredTrackFiles.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell: ImportedTracksCollectionCell = collectionView.dequeueCell(at: indexPath)
-        cell.configure(trackFile: tracksFiles[indexPath.item])
+        cell.configure(trackFile: filteredTrackFiles[indexPath.item])
         cell.delegate = self
         return cell
     }
@@ -102,6 +115,17 @@ extension ImportedTracksViewController: UIDocumentPickerDelegate {
     }
 }
 
+// MARK: - UISearchResultsUpdating
+extension ImportedTracksViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        guard let input = searchController.searchBar.searchTextField.text else {
+            return
+        }
+        filterPhrase = input
+        tracksCollectionView.reloadData()
+    }
+}
+
 private extension ImportedTracksViewController {
     // MARK: Internal
     func presentTrackEdit(trackIndex: Int, trackList: [URL]) {
@@ -122,7 +146,7 @@ private extension ImportedTracksViewController {
     // MARK: Layout
     func layout() {
         NSLayoutConstraint.activate([
-            tracksCollectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            tracksCollectionView.topAnchor.constraint(equalTo: view.topAnchor),
             tracksCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tracksCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tracksCollectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
@@ -131,6 +155,12 @@ private extension ImportedTracksViewController {
     
     // MARK: Setup
     func setup() {
+        // Search Controller
+        searchController.searchResultsUpdater = self
+        searchController.searchBar.tintColor = UIColor("#3A3A3C")
+        searchController.searchBar.searchTextField.font = .systemFont(ofSize: 16, weight: .regular)
+        searchController.searchBar.placeholder = "Search for track"
+        
         // Tracks Collection View
         tracksCollectionView.backgroundColor = UIColor("#F5F2E9")
         tracksCollectionView.showsVerticalScrollIndicator = false
@@ -150,5 +180,6 @@ private extension ImportedTracksViewController {
         view.backgroundColor = UIColor("#F5F2E9")
         title = "Library"
         navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.searchController = searchController
     }
 }

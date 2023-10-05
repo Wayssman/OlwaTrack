@@ -77,6 +77,14 @@ final class TrackFileService {
         }
     }
     
+    func deleteFile(at url: URL) throws {
+        do {
+            try FileManager.default.removeItem(at: url)
+        } catch {
+            // TODO: Write Error Handling
+        }
+    }
+    
     func getImportedFiles() throws -> [ImportedTrackFile] {
         guard
             let documentsUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
@@ -90,7 +98,7 @@ final class TrackFileService {
             let contentOfDirectory = try FileManager.default.contentsOfDirectory(
                 at: directoryForImportUrl,
                 includingPropertiesForKeys: nil
-            )
+            ).sorted { $0.path < $1.path }
             return contentOfDirectory.compactMap { ImportedTrackFile(url: $0) }
             
         } catch {

@@ -16,7 +16,6 @@
 		70D5B8E52ABE60A900D54BC0 /* TrackFileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D5B8E42ABE60A900D54BC0 /* TrackFileService.swift */; };
 		70D5B8E82ABE623E00D54BC0 /* ImportedTrackFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D5B8E72ABE623E00D54BC0 /* ImportedTrackFile.swift */; };
 		70D5B8EA2ABE6AB100D54BC0 /* OTNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D5B8E92ABE6AB100D54BC0 /* OTNavigationController.swift */; };
-		70D5B8EC2ABE6E6800D54BC0 /* OTSearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D5B8EB2ABE6E6800D54BC0 /* OTSearchBar.swift */; };
 		70D5B8EE2ABE714B00D54BC0 /* ImportedTracksCollectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D5B8ED2ABE714B00D54BC0 /* ImportedTracksCollectionHeader.swift */; };
 		70F4C00E2A2824F3004FDC5A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F4C00D2A2824F3004FDC5A /* AppDelegate.swift */; };
 		70F4C0102A2824F3004FDC5A /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F4C00F2A2824F3004FDC5A /* SceneDelegate.swift */; };
@@ -44,7 +43,6 @@
 		70D5B8E42ABE60A900D54BC0 /* TrackFileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackFileService.swift; sourceTree = "<group>"; };
 		70D5B8E72ABE623E00D54BC0 /* ImportedTrackFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportedTrackFile.swift; sourceTree = "<group>"; };
 		70D5B8E92ABE6AB100D54BC0 /* OTNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTNavigationController.swift; sourceTree = "<group>"; };
-		70D5B8EB2ABE6E6800D54BC0 /* OTSearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTSearchBar.swift; sourceTree = "<group>"; };
 		70D5B8ED2ABE714B00D54BC0 /* ImportedTracksCollectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportedTracksCollectionHeader.swift; sourceTree = "<group>"; };
 		70F4C00A2A2824F3004FDC5A /* OlwaTrack.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OlwaTrack.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		70F4C00D2A2824F3004FDC5A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -173,7 +171,6 @@
 			children = (
 				705621482A435C190032CD91 /* OTOptionControl.swift */,
 				70D5B8E92ABE6AB100D54BC0 /* OTNavigationController.swift */,
-				70D5B8EB2ABE6E6800D54BC0 /* OTSearchBar.swift */,
 			);
 			path = CustomizedElements;
 			sourceTree = "<group>";
@@ -274,7 +271,6 @@
 				70FF75812A2CE6D700558DD0 /* UIColor+Extensions.swift in Sources */,
 				70F4C0102A2824F3004FDC5A /* SceneDelegate.swift in Sources */,
 				70D5B8E82ABE623E00D54BC0 /* ImportedTrackFile.swift in Sources */,
-				70D5B8EC2ABE6E6800D54BC0 /* OTSearchBar.swift in Sources */,
 				70F4C0222A2826F6004FDC5A /* MainViewController.swift in Sources */,
 				70C707E82A5365070007A576 /* Reusable.swift in Sources */,
 				70C707EC2A536FA00007A576 /* TrackPlaybackControlsPanel.swift in Sources */,

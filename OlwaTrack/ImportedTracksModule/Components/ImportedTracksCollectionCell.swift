@@ -9,7 +9,7 @@ import UIKit
 import AVFoundation
 
 protocol ImportedTracksCollectionCellDelegate: AnyObject {
-    func didRemoveButtonTap()
+    func didRemoveTrackFile(_ trackFile: ImportedTrackFile)
 }
 
 final class ImportedTracksCollectionCell: UICollectionViewCell {
@@ -45,6 +45,7 @@ final class ImportedTracksCollectionCell: UICollectionViewCell {
         trackFile = nil
         trackPreview.image = nil
         trackTitle.text = ""
+        trackLength.text = ""
     }
     
     // MARK: Interface
@@ -79,6 +80,14 @@ private extension ImportedTracksCollectionCell {
         trackPreview.image = UIImage(data: preview ?? Data())
         trackTitle.text = title
         trackLength.text = length
+    }
+    
+    // MARK: User Interactivity
+    @objc private func removeAction() {
+        guard let trackFile = self.trackFile else {
+            return
+        }
+        delegate?.didRemoveTrackFile(trackFile)
     }
     
     // MARK: Layout
@@ -139,6 +148,7 @@ private extension ImportedTracksCollectionCell {
         // Track Remove Button
         trackRemoveButton.setImage(UIImage(named: "iconDelete"), for: [])
         trackRemoveButton.tintColor = UIColor("#3A3A3C")
+        trackRemoveButton.addTarget(self, action: #selector(removeAction), for: .touchUpInside)
         
         trackRemoveButton.translatesAutoresizingMaskIntoConstraints = false
         addSubview(trackRemoveButton)
