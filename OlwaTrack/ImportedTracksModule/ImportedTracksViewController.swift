@@ -83,7 +83,7 @@ extension ImportedTracksViewController: UICollectionViewDataSource {
 
 extension ImportedTracksViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        //presentTrackEdit(trackIndex: indexPath.row, trackList: tracksFiles)
+        presentTrackEdit(trackFile: self.filteredTrackFiles[indexPath.row])
     }
 }
 
@@ -128,9 +128,9 @@ extension ImportedTracksViewController: UISearchResultsUpdating {
 
 private extension ImportedTracksViewController {
     // MARK: Internal
-    func presentTrackEdit(trackIndex: Int, trackList: [URL]) {
-        let trackEditViewController = TrackEditViewController(trackIndex: trackIndex, trackList: trackList)
-        trackEditViewController.modalPresentationStyle = .pageSheet
+    func presentTrackEdit(trackFile: ImportedTrackFile) {
+        let trackEditViewController = TrackEditViewController(trackFile: trackFile)
+        trackEditViewController.modalPresentationStyle = .fullScreen
         present(trackEditViewController, animated: true)
     }
     
