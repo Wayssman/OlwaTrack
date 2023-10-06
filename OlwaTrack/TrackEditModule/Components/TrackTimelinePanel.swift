@@ -8,6 +8,11 @@
 import UIKit
 
 final class TrackTimelinePanel: UIView {
+    // MARK: Constatns
+    let maxWavesCount = 3
+    let startWaveDiametr: CGFloat = 10
+    let endWaveDiametr: CGFloat = 300
+    
     // MARK: Callbacks
     var currentTimeDidChange: ((TimeInterval) -> Void)?
     
@@ -23,11 +28,15 @@ final class TrackTimelinePanel: UIView {
     private let leftTimeLabel = UILabel()
     private let remainTimeLabel = UILabel()
     
+    // MARK: Sublayers
+    private var preservedAnimationSublayersInfo: [(layer: CAShapeLayer, startTime: TimeInterval)] = []
+    
     // MARK: Initializers
     override init(frame: CGRect) {
         super.init(frame: frame)
         setup()
         layout()
+        preserveAnimationSublayers()
     }
     
     required init?(coder: NSCoder) {
@@ -51,6 +60,12 @@ final class TrackTimelinePanel: UIView {
 }
 
 private extension TrackTimelinePanel {
+    // MARK: User Interactivity
+    @objc private func didTap(_ sender: UITapGestureRecognizer? = nil) {
+        guard let point = sender?.location(in: self) else { return }
+        launchTouchAnimation(point)
+    }
+    
     // MARK: Helpers
     func refreshTimeLabels(timeLeft: TimeInterval, timeRemains: TimeInterval) {
         let formatter = DateComponentsFormatter()
@@ -61,6 +76,45 @@ private extension TrackTimelinePanel {
         remainTimeLabel.text = "-" + (formatter.string(from: timeRemains.rounded(.up)) ?? "")
     }
     
+    func launchTouchAnimation(_ point: CGPoint) {
+        // Find free layer or take first
+        let minTime = preservedAnimationSublayersInfo.map { $0.startTime }.min() ?? 0
+        let layerInfoIndex = preservedAnimationSublayersInfo.firstIndex(
+            where: { $0.layer.animation(forKey: "WaveAnimationKey") == nil }
+        ) ?? preservedAnimationSublayersInfo.firstIndex(
+            where: { $0.startTime == minTime }
+        )
+        
+        guard let layerInfoIndex = layerInfoIndex else { return }
+        
+        // Create Animation
+        let animationGroup = CAAnimationGroup()
+        animationGroup.duration = 0.5
+        animationGroup.isRemovedOnCompletion = true
+        
+        let circleWaveAnimation = CABasicAnimation(keyPath: "path")
+        let startRect = rectForCircleWave(point: point, diameter: startWaveDiametr)
+        let endRect = rectForCircleWave(point: point, diameter: endWaveDiametr)
+        circleWaveAnimation.fromValue = UIBezierPath(ovalIn: startRect).cgPath
+        circleWaveAnimation.toValue = UIBezierPath(ovalIn: endRect).cgPath
+        
+        let opacityAnimation = CABasicAnimation(keyPath: "opacity")
+        opacityAnimation.fromValue = 0.5
+        opacityAnimation.toValue = 0
+        
+        animationGroup.animations = [circleWaveAnimation, opacityAnimation]
+        preservedAnimationSublayersInfo[layerInfoIndex].layer.add(animationGroup, forKey: "WaveAnimationKey")
+        preservedAnimationSublayersInfo[layerInfoIndex].startTime = Date().timeIntervalSinceReferenceDate
+    }
+    
+    func rectForCircleWave(point: CGPoint, diameter: CGFloat) -> CGRect {
+        return CGRect(
+            x: point.x - diameter / 2,
+            y: point.y - diameter / 2,
+            width: diameter,
+            height: diameter
+        )
+    }
     
     // MARK: Layout
     func layout() {
@@ -73,12 +127,10 @@ private extension TrackTimelinePanel {
             bpmHintLabel.topAnchor.constraint(equalTo: topAnchor, constant: 20),
             bpmHintLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
             bpmHintLabel.widthAnchor.constraint(equalToConstant: 50),
-            //bpmHintLabel.heightAnchor.constraint(equalToConstant: 16),
             
             bpmLabel.topAnchor.constraint(equalTo: bpmHintLabel.bottomAnchor, constant: 8),
             bpmLabel.centerXAnchor.constraint(equalTo: bpmHintLabel.centerXAnchor),
             bpmLabel.widthAnchor.constraint(equalToConstant: 66),
-            //bpmLabel.heightAnchor.constraint(equalToConstant: 22),
             
             timeline.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 48),
             timeline.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -48),
@@ -155,5 +207,21 @@ private extension TrackTimelinePanel {
         // Self
         backgroundColor = UIColor("#F2E4CE")
         layer.cornerRadius = 16
+        layer.masksToBounds = true
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTap))
+        addGestureRecognizer(tapGestureRecognizer)
+    }
+    
+    func preserveAnimationSublayers() {
+        for _ in 0..<maxWavesCount {
+            let sublayer = CAShapeLayer()
+            
+            sublayer.lineWidth = 1
+            sublayer.strokeColor = UIColor("#BF6437")?.cgColor
+            sublayer.fillColor = .none
+            
+            layer.addSublayer(sublayer)
+            preservedAnimationSublayersInfo.append((layer: sublayer, startTime: 0))
+        }
     }
 }
