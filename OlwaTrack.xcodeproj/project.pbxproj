@@ -13,6 +13,10 @@
 		70C707EA2A5369E10007A576 /* MixingContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70C707E92A5369E10007A576 /* MixingContainer.swift */; };
 		70C707EC2A536FA00007A576 /* TrackPlaybackControlsPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70C707EB2A536FA00007A576 /* TrackPlaybackControlsPanel.swift */; };
 		70C707EE2A5375150007A576 /* TrackTimelinePanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70C707ED2A5375150007A576 /* TrackTimelinePanel.swift */; };
+		70D5B8E52ABE60A900D54BC0 /* TrackFileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D5B8E42ABE60A900D54BC0 /* TrackFileService.swift */; };
+		70D5B8E82ABE623E00D54BC0 /* ImportedTrackFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D5B8E72ABE623E00D54BC0 /* ImportedTrackFile.swift */; };
+		70D5B8EA2ABE6AB100D54BC0 /* OTNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D5B8E92ABE6AB100D54BC0 /* OTNavigationController.swift */; };
+		70D5B8EE2ABE714B00D54BC0 /* ImportedTracksCollectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D5B8ED2ABE714B00D54BC0 /* ImportedTracksCollectionHeader.swift */; };
 		70F4C00E2A2824F3004FDC5A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F4C00D2A2824F3004FDC5A /* AppDelegate.swift */; };
 		70F4C0102A2824F3004FDC5A /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F4C00F2A2824F3004FDC5A /* SceneDelegate.swift */; };
 		70F4C0122A2824F3004FDC5A /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F4C0112A2824F3004FDC5A /* ViewController.swift */; };
@@ -36,6 +40,10 @@
 		70C707E92A5369E10007A576 /* MixingContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MixingContainer.swift; sourceTree = "<group>"; };
 		70C707EB2A536FA00007A576 /* TrackPlaybackControlsPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackPlaybackControlsPanel.swift; sourceTree = "<group>"; };
 		70C707ED2A5375150007A576 /* TrackTimelinePanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackTimelinePanel.swift; sourceTree = "<group>"; };
+		70D5B8E42ABE60A900D54BC0 /* TrackFileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackFileService.swift; sourceTree = "<group>"; };
+		70D5B8E72ABE623E00D54BC0 /* ImportedTrackFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportedTrackFile.swift; sourceTree = "<group>"; };
+		70D5B8E92ABE6AB100D54BC0 /* OTNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTNavigationController.swift; sourceTree = "<group>"; };
+		70D5B8ED2ABE714B00D54BC0 /* ImportedTracksCollectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportedTracksCollectionHeader.swift; sourceTree = "<group>"; };
 		70F4C00A2A2824F3004FDC5A /* OlwaTrack.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OlwaTrack.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		70F4C00D2A2824F3004FDC5A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		70F4C00F2A2824F3004FDC5A /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -66,6 +74,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		70D5B8E32ABE609A00D54BC0 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				70D5B8E42ABE60A900D54BC0 /* TrackFileService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		70D5B8E62ABE623100D54BC0 /* Entities */ = {
+			isa = PBXGroup;
+			children = (
+				70D5B8E72ABE623E00D54BC0 /* ImportedTrackFile.swift */,
+			);
+			path = Entities;
+			sourceTree = "<group>";
+		};
 		70F4C0012A2824F3004FDC5A = {
 			isa = PBXGroup;
 			children = (
@@ -86,6 +110,8 @@
 		70F4C00C2A2824F3004FDC5A /* OlwaTrack */ = {
 			isa = PBXGroup;
 			children = (
+				70D5B8E62ABE623100D54BC0 /* Entities */,
+				70D5B8E32ABE609A00D54BC0 /* Services */,
 				70FF75772A2CD87900558DD0 /* Extensions */,
 				70FF75742A2CD78500558DD0 /* CustomizedElements */,
 				70FF75712A2CCD4200558DD0 /* TrackEditModule */,
@@ -144,6 +170,7 @@
 			isa = PBXGroup;
 			children = (
 				705621482A435C190032CD91 /* OTOptionControl.swift */,
+				70D5B8E92ABE6AB100D54BC0 /* OTNavigationController.swift */,
 			);
 			path = CustomizedElements;
 			sourceTree = "<group>";
@@ -162,6 +189,7 @@
 			isa = PBXGroup;
 			children = (
 				70FF75832A2D078700558DD0 /* ImportedTracksCollectionCell.swift */,
+				70D5B8ED2ABE714B00D54BC0 /* ImportedTracksCollectionHeader.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -238,9 +266,11 @@
 			files = (
 				70F4C0122A2824F3004FDC5A /* ViewController.swift in Sources */,
 				70FC27282A335EAC00A6122B /* TrackTimelineControl.swift in Sources */,
+				70D5B8EE2ABE714B00D54BC0 /* ImportedTracksCollectionHeader.swift in Sources */,
 				70F4C00E2A2824F3004FDC5A /* AppDelegate.swift in Sources */,
 				70FF75812A2CE6D700558DD0 /* UIColor+Extensions.swift in Sources */,
 				70F4C0102A2824F3004FDC5A /* SceneDelegate.swift in Sources */,
+				70D5B8E82ABE623E00D54BC0 /* ImportedTrackFile.swift in Sources */,
 				70F4C0222A2826F6004FDC5A /* MainViewController.swift in Sources */,
 				70C707E82A5365070007A576 /* Reusable.swift in Sources */,
 				70C707EC2A536FA00007A576 /* TrackPlaybackControlsPanel.swift in Sources */,
@@ -249,9 +279,11 @@
 				70F4C0262A283E90004FDC5A /* TrackViewController.swift in Sources */,
 				70FF75842A2D078700558DD0 /* ImportedTracksCollectionCell.swift in Sources */,
 				70C707EA2A5369E10007A576 /* MixingContainer.swift in Sources */,
+				70D5B8E52ABE60A900D54BC0 /* TrackFileService.swift in Sources */,
 				705621492A435C190032CD91 /* OTOptionControl.swift in Sources */,
 				70F4C0242A282A2B004FDC5A /* FileObject.swift in Sources */,
 				70FC27252A333D3B00A6122B /* TrackEditViewController.swift in Sources */,
+				70D5B8EA2ABE6AB100D54BC0 /* OTNavigationController.swift in Sources */,
 				70C707EE2A5375150007A576 /* TrackTimelinePanel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

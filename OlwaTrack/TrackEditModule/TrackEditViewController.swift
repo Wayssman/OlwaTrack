@@ -18,23 +18,23 @@ final class TrackEditViewController: UIViewController {
     private let speedControl = AVAudioUnitVarispeed()
     
     // MARK: Properties
-    private var trackIndex: Int
-    private var trackList: [URL]
+    private var trackFile: ImportedTrackFile
     private var audioFile: AVAudioFile?
     private var timer: Timer?
     private var audioFileScheduleOffset: TimeInterval = 0
     
     // MARK: Subviews
+    private let hideButton = UIButton()
     private let exportButton = UIButton()
     private let timelinePanel = TrackTimelinePanel()
+    private let trackPreview = UIImageView()
     private let trackTitleLabel = UILabel()
     private let playbackControlsPanel = TrackPlaybackControlsPanel()
     private let mixingContainer = MixingContainer()
     
     // MARK: Initializers
-    init(trackIndex: Int, trackList: [URL]) {
-        self.trackIndex = trackIndex
-        self.trackList = trackList
+    init(trackFile: ImportedTrackFile) {
+        self.trackFile = trackFile
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -61,19 +61,34 @@ final class TrackEditViewController: UIViewController {
     }
 }
 
+// MARK: - TrackPlaybackControlsPanelDelegate
+extension TrackEditViewController: TrackPlaybackControlsPanelDelegate {
+    func didRepeatButtonTapped() {
+        
+    }
+    
+    func didPreviousButtonTapped() {
+        
+    }
+    
+    func didMainButtonTapped() {
+        if playerNode.isPlaying {
+            pauseAudio()
+        } else {
+            playAudio()
+        }
+    }
+    
+    func didNextButtonTapped() {
+        
+    }
+}
+
 private extension TrackEditViewController {
     // MARK: Internal
     func prepareTrackFile() {
-        guard
-            trackIndex >= 0 && trackIndex < trackList.count,
-            let trackFile = try? AVAudioFile(forReading: trackList[trackIndex])
-        else {
-            dismiss(animated: true)
-            return
-        }
-        trackTitleLabel.text = 
         audioEngine.reset()
-        self.audioFile = trackFile
+        self.audioFile = trackFile.audioFile
         prepareAudioEngine()
     }
     
@@ -274,39 +289,51 @@ private extension TrackEditViewController {
         renderToFile()
     }
     
+    @objc func hideTapped() {
+        dismiss(animated: true)
+    }
+    
     // MARK: Layout
     func layout() {
         NSLayoutConstraint.activate([
-            timelinePanel.topAnchor.constraint(equalTo: view.topAnchor, constant: 100),
-            timelinePanel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30),
-            timelinePanel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30),
+            timelinePanel.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -60),
+            timelinePanel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            timelinePanel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             timelinePanel.heightAnchor.constraint(equalTo: timelinePanel.widthAnchor),
             
-            trackTitleLabel.topAnchor.constraint(equalTo: timelinePanel.bottomAnchor, constant: 22),
-            trackTitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30),
-            trackTitleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30),
+            hideButton.bottomAnchor.constraint(equalTo: timelinePanel.topAnchor, constant: -14),
+            hideButton.leadingAnchor.constraint(equalTo: timelinePanel.leadingAnchor),
+            hideButton.heightAnchor.constraint(equalToConstant: 48),
+            hideButton.widthAnchor.constraint(equalToConstant: 48),
             
             exportButton.bottomAnchor.constraint(equalTo: timelinePanel.topAnchor, constant: -14),
             exportButton.trailingAnchor.constraint(equalTo: timelinePanel.trailingAnchor),
             exportButton.heightAnchor.constraint(equalToConstant: 48),
             exportButton.widthAnchor.constraint(equalToConstant: 156),
             
-            playbackControlsPanel.topAnchor.constraint(equalTo: trackTitleLabel.bottomAnchor, constant: 33),
-            playbackControlsPanel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            playbackControlsPanel.heightAnchor.constraint(equalToConstant: 24),
+            trackPreview.topAnchor.constraint(equalTo: timelinePanel.bottomAnchor, constant: 30),
+            trackPreview.leadingAnchor.constraint(equalTo: timelinePanel.leadingAnchor),
+            trackPreview.heightAnchor.constraint(equalToConstant: 56),
+            trackPreview.widthAnchor.constraint(equalTo: trackPreview.heightAnchor),
             
-            mixingContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 7),
-            mixingContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -7),
-            mixingContainer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -8),
-            mixingContainer.heightAnchor.constraint(equalToConstant: 102)
+            trackTitleLabel.centerYAnchor.constraint(equalTo: trackPreview.centerYAnchor),
+            trackTitleLabel.leadingAnchor.constraint(equalTo: trackPreview.trailingAnchor, constant: 10),
+            trackTitleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            
+            playbackControlsPanel.topAnchor.constraint(equalTo: trackPreview.bottomAnchor, constant: 20),
+            playbackControlsPanel.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            playbackControlsPanel.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            playbackControlsPanel.heightAnchor.constraint(equalToConstant: 40),
+            
+            mixingContainer.topAnchor.constraint(equalTo: playbackControlsPanel.bottomAnchor, constant: 30),
+            mixingContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            mixingContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            mixingContainer.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
     
     // MARK: Setup
     func setup() {
-        // View
-        view.backgroundColor = .white
-        
         // Timeline Container
         timelinePanel.currentTimeDidChange = { [weak self] timeInSeconds in
             guard let self = self else { return }
@@ -324,14 +351,15 @@ private extension TrackEditViewController {
         timelinePanel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(timelinePanel)
         
-        // Track Title Label
-        trackTitleLabel.text = "Music File Name 1 - Very Long Long Naame"
-        trackTitleLabel.font = .systemFont(ofSize: 20, weight: .bold)
-        trackTitleLabel.textColor = .black
-        trackTitleLabel.textAlignment = .left
-        trackTitleLabel.numberOfLines = 0
-        trackTitleLabel.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(trackTitleLabel)
+        // Hide Button
+        let hideButtonConfiguration = UIImage.SymbolConfiguration(pointSize: 22, weight: .medium)
+        let hideButtonImage = UIImage(systemName: "chevron.down", withConfiguration: hideButtonConfiguration)
+        hideButton.setImage(hideButtonImage, for: [])
+        hideButton.tintColor = UIColor("#3A3A3C")
+        hideButton.addTarget(self, action: #selector(hideTapped), for: .touchUpInside)
+        
+        hideButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(hideButton)
         
         // Export Button
         let exportButtonImage = UIImage(
@@ -340,46 +368,41 @@ private extension TrackEditViewController {
     
         exportButton.setTitle("Export Track", for: [])
         exportButton.setImage(exportButtonImage, for: [])
+        exportButton.titleLabel?.font = .systemFont(ofSize: 17, weight: .regular)
         exportButton.tintColor = .white
         exportButton.adjustsImageWhenHighlighted = false
         exportButton.setTitleColor(.white, for: [])
-        exportButton.backgroundColor = UIColor("#1E1E1E")?.withAlphaComponent(0.75)
-        exportButton.layer.cornerRadius = 13
-        exportButton.imageEdgeInsets = .init(top: 0, left: 12, bottom: 2, right: 0)
-        exportButton.titleEdgeInsets = .init(top: 0, left: 0, bottom: 0, right: 12)
+        exportButton.backgroundColor = UIColor("#3A3A3C")
+        exportButton.layer.cornerRadius = 8
+        exportButton.imageEdgeInsets = .init(top: 0, left: 10, bottom: 2, right: 0)
+        exportButton.titleEdgeInsets = .init(top: 0, left: 0, bottom: 0, right: 10)
         exportButton.semanticContentAttribute = .forceRightToLeft
         exportButton.translatesAutoresizingMaskIntoConstraints = false
         exportButton.addTarget(self, action: #selector(exportTapped), for: .touchUpInside)
         view.addSubview(exportButton)
         
+        // Track Preview
+        trackPreview.image = UIImage(data: trackFile.info.artwork ?? Data())
+        trackPreview.contentMode = .scaleAspectFit
+        trackPreview.layer.cornerRadius = 8
+        trackPreview.layer.masksToBounds = true
+        trackPreview.backgroundColor = UIColor("#F2E4CE")
+        
+        trackPreview.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(trackPreview)
+        
+        // Track Title Label
+        trackTitleLabel.text = trackFile.info.title ?? trackFile.fileName
+        trackTitleLabel.font = .systemFont(ofSize: 20, weight: .medium)
+        trackTitleLabel.textColor = UIColor("#3A3A3C")
+        trackTitleLabel.textAlignment = .left
+        trackTitleLabel.numberOfLines = 2
+        
+        trackTitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(trackTitleLabel)
+        
         // Playback Controls Panel
-        playbackControlsPanel.didPreviousButtonTapped = { [weak self] in
-            guard let self = self else { return }
-            if trackIndex - 1 >= 0 {
-                stopAudio()
-                trackIndex -= 1
-                prepareTrackFile()
-            }
-        }
-        
-        playbackControlsPanel.didMainButtonTapped = { [weak self] in
-            guard let self = self else { return }
-            if playerNode.isPlaying {
-                pauseAudio()
-            } else {
-                playAudio()
-            }
-        }
-        
-        playbackControlsPanel.didNextButtonTapped = { [weak self] in
-            guard let self = self else { return }
-            if trackIndex + 1 < trackList.count {
-                stopAudio()
-                trackIndex += 1
-                prepareTrackFile()
-            }
-        }
-        
+        playbackControlsPanel.delegate = self
         playbackControlsPanel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(playbackControlsPanel)
         
@@ -391,5 +414,8 @@ private extension TrackEditViewController {
         
         mixingContainer.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(mixingContainer)
+        
+        // View
+        view.backgroundColor = UIColor("#F5F2E9")
     }
 }
