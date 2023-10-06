@@ -12,7 +12,7 @@ final class TrackTimelineControl: UIControl {
     var valueDidChange: ((CGFloat) -> Void)?
     
     // MARK: Constants
-    let handleRadius: CGFloat = 10
+    let handleRadius: CGFloat = 8
     let timelinePadding: CGFloat = 4
     let timelineWidth: CGFloat = 4
     let startAngle: CGFloat = -.pi / 2
@@ -55,11 +55,6 @@ final class TrackTimelineControl: UIControl {
         guard !isTracking else { return }
         self.value = CGFloat(value)
         setNeedsDisplay()
-    }
-    
-    // MARK: Others
-    override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        return false
     }
 }
 
@@ -112,7 +107,7 @@ private extension TrackTimelineControl {
     
     // MARK: Helpers
     func drawBackgroundLine(_ rect: CGRect) {
-        let color = UIColor("#3C3C43")?.withAlphaComponent(0.18) ?? .gray
+        let color = UIColor("#BF6437")?.withAlphaComponent(0.15) ?? .gray
         
         let path = UIBezierPath(ovalIn: rect)
         path.lineWidth = timelineWidth
@@ -121,7 +116,7 @@ private extension TrackTimelineControl {
     }
     
     func drawProgressLine(_ rect: CGRect) {
-        let color = UIColor("#007AFF") ?? .systemBlue
+        let color = UIColor("#BF6437") ?? .systemBlue
         let endAngle: CGFloat = startAngle + 2 * .pi * value
         
         let path = UIBezierPath(

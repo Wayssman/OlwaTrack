@@ -61,6 +61,29 @@ final class TrackEditViewController: UIViewController {
     }
 }
 
+// MARK: - TrackPlaybackControlsPanelDelegate
+extension TrackEditViewController: TrackPlaybackControlsPanelDelegate {
+    func didRepeatButtonTapped() {
+        
+    }
+    
+    func didPreviousButtonTapped() {
+        
+    }
+    
+    func didMainButtonTapped() {
+        if playerNode.isPlaying {
+            pauseAudio()
+        } else {
+            playAudio()
+        }
+    }
+    
+    func didNextButtonTapped() {
+        
+    }
+}
+
 private extension TrackEditViewController {
     // MARK: Internal
     func prepareTrackFile() {
@@ -297,14 +320,15 @@ private extension TrackEditViewController {
             trackTitleLabel.leadingAnchor.constraint(equalTo: trackPreview.trailingAnchor, constant: 10),
             trackTitleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             
-            playbackControlsPanel.topAnchor.constraint(equalTo: trackTitleLabel.bottomAnchor, constant: 33),
-            playbackControlsPanel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            playbackControlsPanel.heightAnchor.constraint(equalToConstant: 24),
+            playbackControlsPanel.topAnchor.constraint(equalTo: trackPreview.bottomAnchor, constant: 20),
+            playbackControlsPanel.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            playbackControlsPanel.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            playbackControlsPanel.heightAnchor.constraint(equalToConstant: 40),
             
-            mixingContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 7),
-            mixingContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -7),
-            mixingContainer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -8),
-            mixingContainer.heightAnchor.constraint(equalToConstant: 102)
+            mixingContainer.topAnchor.constraint(equalTo: playbackControlsPanel.bottomAnchor, constant: 30),
+            mixingContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            mixingContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            mixingContainer.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
     
@@ -378,25 +402,7 @@ private extension TrackEditViewController {
         view.addSubview(trackTitleLabel)
         
         // Playback Controls Panel
-        playbackControlsPanel.didPreviousButtonTapped = { [weak self] in
-            guard let self = self else { return }
-            
-        }
-        
-        playbackControlsPanel.didMainButtonTapped = { [weak self] in
-            guard let self = self else { return }
-            if playerNode.isPlaying {
-                pauseAudio()
-            } else {
-                playAudio()
-            }
-        }
-        
-        playbackControlsPanel.didNextButtonTapped = { [weak self] in
-            guard let self = self else { return }
-            
-        }
-        
+        playbackControlsPanel.delegate = self
         playbackControlsPanel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(playbackControlsPanel)
         

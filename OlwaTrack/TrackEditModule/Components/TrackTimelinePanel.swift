@@ -16,6 +16,9 @@ final class TrackTimelinePanel: UIView {
     private var currentTimeInSeconds: TimeInterval = 0
     
     // MARK: Subviews
+    private let tapHintLabel = UILabel()
+    private let bpmHintLabel = UILabel()
+    private let bpmLabel = UILabel()
     private let timeline = TrackTimelineControl()
     private let leftTimeLabel = UILabel()
     private let remainTimeLabel = UILabel()
@@ -45,11 +48,6 @@ final class TrackTimelinePanel: UIView {
         refreshTimeLabels(timeLeft: currentTimeInSeconds, timeRemains: timeRemains)
         timeline.configure(value: Float(currentTimeInSeconds/lengthInSeconds))
     }
-    
-    // MARK: Others
-    override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        return false
-    }
 }
 
 private extension TrackTimelinePanel {
@@ -67,28 +65,65 @@ private extension TrackTimelinePanel {
     // MARK: Layout
     func layout() {
         NSLayoutConstraint.activate([
-            timeline.topAnchor.constraint(equalTo: topAnchor, constant: 20),
-            timeline.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
-            timeline.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
-            timeline.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -20),
+            tapHintLabel.topAnchor.constraint(equalTo: topAnchor, constant: 8),
+            tapHintLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
+            tapHintLabel.widthAnchor.constraint(equalToConstant: 150),
+            tapHintLabel.heightAnchor.constraint(equalToConstant: 40),
+            
+            bpmHintLabel.topAnchor.constraint(equalTo: topAnchor, constant: 20),
+            bpmHintLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
+            bpmHintLabel.widthAnchor.constraint(equalToConstant: 50),
+            //bpmHintLabel.heightAnchor.constraint(equalToConstant: 16),
+            
+            bpmLabel.topAnchor.constraint(equalTo: bpmHintLabel.bottomAnchor, constant: 8),
+            bpmLabel.centerXAnchor.constraint(equalTo: bpmHintLabel.centerXAnchor),
+            bpmLabel.widthAnchor.constraint(equalToConstant: 66),
+            //bpmLabel.heightAnchor.constraint(equalToConstant: 22),
+            
+            timeline.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 48),
+            timeline.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -48),
+            timeline.heightAnchor.constraint(equalTo: timeline.widthAnchor),
+            timeline.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -36),
             
             leftTimeLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            leftTimeLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -13),
+            leftTimeLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16),
             
             remainTimeLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
-            remainTimeLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -13)
+            remainTimeLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16)
         ])
     }
     
     // MARK: Setup
     func setup() {
-        // Self
-        backgroundColor = .white
-        layer.cornerRadius = 22
-        layer.shadowOffset = .zero
-        layer.shadowColor = UIColor.black.cgColor
-        layer.shadowOpacity = 0.25
-        layer.shadowRadius = 10
+        // Tap Hint Label
+        tapHintLabel.text = "TAP INSIDE CIRCLE"
+        tapHintLabel.font = .systemFont(ofSize: 12, weight: .medium)
+        tapHintLabel.textColor = UIColor("#3A3A3C")?.withAlphaComponent(0.5)
+        tapHintLabel.textAlignment = .center
+        tapHintLabel.numberOfLines = 1
+        
+        tapHintLabel.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(tapHintLabel)
+        
+        // Bpm Hint Label
+        bpmHintLabel.text = "BPM"
+        bpmHintLabel.font = .systemFont(ofSize: 16, weight: .regular)
+        bpmHintLabel.textColor = UIColor("#BF6437")
+        bpmHintLabel.textAlignment = .center
+        bpmHintLabel.numberOfLines = 1
+        
+        bpmHintLabel.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(bpmHintLabel)
+        
+        // Bpm Label
+        bpmLabel.text = "128"
+        bpmLabel.font = .systemFont(ofSize: 22, weight: .medium)
+        bpmLabel.textColor = UIColor("#3A3A3C")
+        bpmLabel.textAlignment = .center
+        bpmLabel.numberOfLines = 1
+        
+        bpmLabel.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(bpmLabel)
         
         // Timeline
         timeline.valueDidChange = { [weak self] value in
@@ -100,21 +135,25 @@ private extension TrackTimelinePanel {
         addSubview(timeline)
         
         // Left Time Label
-        leftTimeLabel.text = "0:07:02"
-        leftTimeLabel.font = .systemFont(ofSize: 11, weight: .regular)
-        leftTimeLabel.textColor = UIColor("#3C3C43")?.withAlphaComponent(0.6)
+        leftTimeLabel.text = "00:00:00"
+        leftTimeLabel.font = .systemFont(ofSize: 12, weight: .regular)
+        leftTimeLabel.textColor = UIColor("#BF6437")
         leftTimeLabel.textAlignment = .left
         leftTimeLabel.numberOfLines = 1
         leftTimeLabel.translatesAutoresizingMaskIntoConstraints = false
         addSubview(leftTimeLabel)
         
         // Remain Time Label
-        remainTimeLabel.text = "-0:24:02"
-        remainTimeLabel.font = .systemFont(ofSize: 11, weight: .regular)
-        remainTimeLabel.textColor = UIColor("#3C3C43")?.withAlphaComponent(0.6)
+        remainTimeLabel.text = "-00:00:00"
+        remainTimeLabel.font = .systemFont(ofSize: 12, weight: .regular)
+        remainTimeLabel.textColor = UIColor("#BF6437")
         remainTimeLabel.textAlignment = .right
         remainTimeLabel.numberOfLines = 1
         remainTimeLabel.translatesAutoresizingMaskIntoConstraints = false
         addSubview(remainTimeLabel)
+        
+        // Self
+        backgroundColor = UIColor("#F2E4CE")
+        layer.cornerRadius = 16
     }
 }

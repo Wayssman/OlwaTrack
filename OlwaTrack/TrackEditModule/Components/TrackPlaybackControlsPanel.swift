@@ -7,14 +7,20 @@
 
 import UIKit
 
+protocol TrackPlaybackControlsPanelDelegate: AnyObject {
+    func didRepeatButtonTapped()
+    func didPreviousButtonTapped()
+    func didMainButtonTapped()
+    func didNextButtonTapped()
+}
+
 final class TrackPlaybackControlsPanel: UIView {
-    // MARK: Callbacks
-    var didPreviousButtonTapped: (() -> Void)?
-    var didMainButtonTapped: (() -> Void)?
-    var didNextButtonTapped: (() -> Void)?
+    // MARK: Delegates
+    weak var delegate: TrackPlaybackControlsPanelDelegate?
     
     // MARK: Subviews
     private let playerButtonsStack = UIStackView()
+    private let repeatButton = UIButton()
     private let previousButton = UIButton()
     private let mainButton = UIButton()
     private let nextButton = UIButton()
@@ -36,34 +42,35 @@ final class TrackPlaybackControlsPanel: UIView {
         let pauseButtonImage = UIImage(named: "iconPauseControl")?.withRenderingMode(.alwaysTemplate)
         mainButton.setImage(isPlaying ? pauseButtonImage : playButtonImage, for: [])
     }
-    
-    // MARK: Others
-    override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        return false
-    }
 }
 
 private extension TrackPlaybackControlsPanel {
     // MARK: User Interactive
+    @objc func repeatButtonTapped() {
+        delegate?.didRepeatButtonTapped()
+    }
+    
     @objc func previousButtonTapped() {
-        didPreviousButtonTapped?()
+        delegate?.didPreviousButtonTapped()
     }
     
     @objc func mainButtonTapped() {
-        didMainButtonTapped?()
+        delegate?.didMainButtonTapped()
     }
     
     @objc func nextButtonTapped() {
-        didNextButtonTapped?()
+        delegate?.didPreviousButtonTapped()
     }
     
     // MARK: Layout
     func layout() {
         NSLayoutConstraint.activate([
             playerButtonsStack.topAnchor.constraint(equalTo: topAnchor),
-            playerButtonsStack.leadingAnchor.constraint(equalTo: leadingAnchor),
-            playerButtonsStack.trailingAnchor.constraint(equalTo: trailingAnchor),
+            playerButtonsStack.centerXAnchor.constraint(equalTo: centerXAnchor),
             playerButtonsStack.bottomAnchor.constraint(equalTo: bottomAnchor),
+            
+            repeatButton.trailingAnchor.constraint(equalTo: playerButtonsStack.leadingAnchor, constant: -35),
+            repeatButton.centerYAnchor.constraint(equalTo: playerButtonsStack.centerYAnchor),
         ])
     }
     
@@ -71,15 +78,29 @@ private extension TrackPlaybackControlsPanel {
     func setup() {
         // Player Buttons Stack
         playerButtonsStack.axis = .horizontal
-        playerButtonsStack.spacing = 30
-        //playerButtonsStack.isUserInteractionEnabled = false
+        playerButtonsStack.spacing = 35
+        playerButtonsStack.alignment = .center
         playerButtonsStack.translatesAutoresizingMaskIntoConstraints = false
         addSubview(playerButtonsStack)
+        
+        // Repeat Button
+        let repeatImageConfiguration = UIImage.SymbolConfiguration(pointSize: 20, weight: .medium)
+        let repeatImage = UIImage(
+            systemName: "repeat.1", 
+            withConfiguration: repeatImageConfiguration
+        )?.withRenderingMode(.alwaysTemplate)
+        repeatButton.setImage(repeatImage, for: [])
+        repeatButton.tintColor = UIColor("#3A3A3C")?.withAlphaComponent(0.5)
+        repeatButton.adjustsImageWhenHighlighted = false
+        repeatButton.addTarget(self, action: #selector(repeatButtonTapped), for: .touchUpInside)
+        
+        repeatButton.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(repeatButton)
         
         // Previous Button
         let previousButtonImage = UIImage(named: "iconBackControl")?.withRenderingMode(.alwaysTemplate)
         previousButton.setImage(previousButtonImage, for: [])
-        previousButton.tintColor = .systemBlue
+        previousButton.tintColor = UIColor("#BF6437")
         previousButton.adjustsImageWhenHighlighted = false
         previousButton.addTarget(self, action: #selector(previousButtonTapped), for: .touchUpInside)
         
@@ -89,7 +110,7 @@ private extension TrackPlaybackControlsPanel {
         // Main Button
         let mainButtonImage = UIImage(named: "iconPlayControl")?.withRenderingMode(.alwaysTemplate)
         mainButton.setImage(mainButtonImage, for: [])
-        mainButton.tintColor = .systemBlue
+        mainButton.tintColor = UIColor("#BF6437")
         mainButton.adjustsImageWhenHighlighted = false
         mainButton.addTarget(self, action: #selector(mainButtonTapped), for: .touchUpInside)
         
@@ -99,7 +120,7 @@ private extension TrackPlaybackControlsPanel {
         // Next Button
         let nextButtonImage = UIImage(named: "iconForwardControl")?.withRenderingMode(.alwaysTemplate)
         nextButton.setImage(nextButtonImage, for: [])
-        nextButton.tintColor = .systemBlue
+        nextButton.tintColor = UIColor("#BF6437")
         nextButton.adjustsImageWhenHighlighted = false
         nextButton.addTarget(self, action: #selector(nextButtonTapped), for: .touchUpInside)
         

@@ -12,6 +12,7 @@ final class MixingContainer: UIView {
     var playbackSpeedValueDidChange: ((Float) -> Void)?
     
     // MARK: Subviews
+    private let trackSpeedBadge = UIImageView()
     private let trackSpeedLabel = UILabel()
     private let trackSpeedBar = OTOptionControl()
     
@@ -25,40 +26,47 @@ final class MixingContainer: UIView {
     required init?(coder: NSCoder) {
         fatalError()
     }
-    
-    // MARK: Others
-    override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        return false
-    }
 }
 
 private extension MixingContainer {
     func layout() {
         NSLayoutConstraint.activate([
-            trackSpeedLabel.topAnchor.constraint(equalTo: topAnchor, constant: 15),
-            trackSpeedLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            trackSpeedLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
+            trackSpeedBadge.topAnchor.constraint(equalTo: topAnchor),
+            trackSpeedBadge.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 22),
+            trackSpeedBadge.widthAnchor.constraint(equalToConstant: 56),
+            trackSpeedBadge.heightAnchor.constraint(equalTo: trackSpeedBadge.widthAnchor),
             
-            trackSpeedBar.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10),
-            trackSpeedBar.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
+            trackSpeedLabel.topAnchor.constraint(equalTo: trackSpeedBadge.topAnchor),
+            trackSpeedLabel.leadingAnchor.constraint(equalTo: trackSpeedBadge.trailingAnchor, constant: 20),
+            trackSpeedLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
+            
+            trackSpeedBar.bottomAnchor.constraint(equalTo: trackSpeedBadge.bottomAnchor, constant: -3),
+            trackSpeedBar.leadingAnchor.constraint(equalTo: trackSpeedBadge.trailingAnchor, constant: 20),
             trackSpeedBar.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
-            trackSpeedBar.heightAnchor.constraint(equalToConstant: 50)
+            trackSpeedBar.heightAnchor.constraint(equalToConstant: 16)
         ])
     }
     
     func setup() {
-        // Self
-        backgroundColor = .white
-        layer.cornerRadius = 22
-        layer.shadowOffset = .zero
-        layer.shadowColor = UIColor.black.cgColor
-        layer.shadowOpacity = 0.25
-        layer.shadowRadius = 10
+        // Track Speed Bage
+        let badgeImageConfiguration = UIImage.SymbolConfiguration(pointSize: 25, weight: .medium)
+        let badgeImage = UIImage(
+            systemName: "speedometer", 
+            withConfiguration: badgeImageConfiguration
+        )?.withRenderingMode(.alwaysTemplate)
+        trackSpeedBadge.image = badgeImage
+        trackSpeedBadge.contentMode = .center
+        trackSpeedBadge.tintColor = .white
+        trackSpeedBadge.layer.cornerRadius = 8
+        trackSpeedBadge.backgroundColor = UIColor("#BF6437")
+        
+        trackSpeedBadge.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(trackSpeedBadge)
         
         // Track Speed Label
         trackSpeedLabel.text = "Track Speed:"
-        trackSpeedLabel.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-        trackSpeedLabel.textColor = .black
+        trackSpeedLabel.font = UIFont.systemFont(ofSize: 16, weight: .regular)
+        trackSpeedLabel.textColor = UIColor("#3A3A3C")
         trackSpeedLabel.textAlignment = .left
         trackSpeedLabel.numberOfLines = 1
         trackSpeedLabel.translatesAutoresizingMaskIntoConstraints = false
