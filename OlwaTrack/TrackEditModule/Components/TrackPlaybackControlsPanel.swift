@@ -42,6 +42,14 @@ final class TrackPlaybackControlsPanel: UIView {
         let pauseButtonImage = UIImage(named: "iconPauseControl")?.withRenderingMode(.alwaysTemplate)
         mainButton.setImage(isPlaying ? pauseButtonImage : playButtonImage, for: [])
     }
+    
+    func setState(isPeviousEnabled: Bool) {
+        previousButton.isEnabled = isPeviousEnabled
+    }
+    
+    func setState(isNextEnabled: Bool) {
+        nextButton.isEnabled = isNextEnabled
+    }
 }
 
 private extension TrackPlaybackControlsPanel {
@@ -59,7 +67,7 @@ private extension TrackPlaybackControlsPanel {
     }
     
     @objc func nextButtonTapped() {
-        delegate?.didPreviousButtonTapped()
+        delegate?.didNextButtonTapped()
     }
     
     // MARK: Layout

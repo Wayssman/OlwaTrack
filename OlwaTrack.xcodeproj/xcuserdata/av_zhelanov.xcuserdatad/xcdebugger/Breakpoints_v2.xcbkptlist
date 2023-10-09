@@ -142,9 +142,9 @@
             filePath = "OlwaTrack/TrackEditModule/TrackEditViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "298"
-            endingLineNumber = "298"
-            landmarkName = "layout()"
+            startingLineNumber = "332"
+            endingLineNumber = "332"
+            landmarkName = "hideTapped()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -174,10 +174,10 @@
             filePath = "OlwaTrack/TrackEditModule/TrackEditViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "299"
-            endingLineNumber = "299"
-            landmarkName = "layout()"
-            landmarkType = "7">
+            startingLineNumber = "333"
+            endingLineNumber = "333"
+            landmarkName = "TrackEditViewController"
+            landmarkType = "21">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -190,9 +190,9 @@
             filePath = "OlwaTrack/TrackEditModule/TrackEditViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "297"
-            endingLineNumber = "297"
-            landmarkName = "layout()"
+            startingLineNumber = "331"
+            endingLineNumber = "331"
+            landmarkName = "hideTapped()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -238,8 +238,8 @@
             filePath = "OlwaTrack/TrackEditModule/Components/TrackPlaybackControlsPanel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "58"
-            endingLineNumber = "58"
+            startingLineNumber = "66"
+            endingLineNumber = "66"
             landmarkName = "mainButtonTapped()"
             landmarkType = "7">
          </BreakpointContent>
@@ -286,9 +286,9 @@
             filePath = "OlwaTrack/TrackEditModule/TrackEditViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "135"
-            endingLineNumber = "135"
-            landmarkName = "renderToFile()"
+            startingLineNumber = "147"
+            endingLineNumber = "147"
+            landmarkName = "scheduleAudioFile(from:)"
             landmarkType = "7">
             <Locations>
                <Location
@@ -334,8 +334,8 @@
             filePath = "OlwaTrack/TrackEditModule/TrackEditViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "168"
-            endingLineNumber = "168"
+            startingLineNumber = "180"
+            endingLineNumber = "180"
             landmarkName = "renderToFile()"
             landmarkType = "7">
             <Locations>
@@ -457,8 +457,8 @@
             filePath = "OlwaTrack/TrackEditModule/TrackEditViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "101"
-            endingLineNumber = "101"
+            startingLineNumber = "113"
+            endingLineNumber = "113"
             landmarkName = "prepareAudioEngine()"
             landmarkType = "7">
          </BreakpointContent>
@@ -473,8 +473,8 @@
             filePath = "OlwaTrack/TrackEditModule/TrackEditViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "283"
-            endingLineNumber = "283"
+            startingLineNumber = "317"
+            endingLineNumber = "317"
             landmarkName = "timerUpdate()"
             landmarkType = "7">
          </BreakpointContent>
@@ -617,8 +617,8 @@
             filePath = "OlwaTrack/TrackEditModule/TrackEditViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "114"
-            endingLineNumber = "114"
+            startingLineNumber = "126"
+            endingLineNumber = "126"
             landmarkName = "scheduleAudioFile(from:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -633,8 +633,8 @@
             filePath = "OlwaTrack/TrackEditModule/TrackEditViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "107"
-            endingLineNumber = "107"
+            startingLineNumber = "119"
+            endingLineNumber = "119"
             landmarkName = "prepareAudioEngine()"
             landmarkType = "7">
          </BreakpointContent>
@@ -649,8 +649,8 @@
             filePath = "OlwaTrack/TrackEditModule/TrackEditViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "348"
-            endingLineNumber = "348"
+            startingLineNumber = "382"
+            endingLineNumber = "382"
             landmarkName = "setup()"
             landmarkType = "7">
          </BreakpointContent>
@@ -665,8 +665,8 @@
             filePath = "OlwaTrack/TrackEditModule/TrackEditViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "115"
-            endingLineNumber = "115"
+            startingLineNumber = "127"
+            endingLineNumber = "127"
             landmarkName = "scheduleAudioFile(from:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -700,6 +700,86 @@
             startingLineNumber = "13"
             endingLineNumber = "13"
             landmarkName = "init?(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "78B37105-1FB9-49E7-A4F1-0ABDE8F2F204"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "OlwaTrack/TrackEditModule/TrackEditViewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "142"
+            endingLineNumber = "142"
+            landmarkName = "scheduleAudioFile(from:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "31BA48D4-0E9A-4AB6-B938-24CC8696E4DD"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "OlwaTrack/TrackEditModule/TrackEditViewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "86"
+            endingLineNumber = "86"
+            landmarkName = "didMainButtonTapped()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "31BA48D4-0E9A-4AB6-B938-24CC8696E4DD - a6bda5bc96538387"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "OlwaTrack.TrackEditViewController.didNextButtonTapped() -&gt; ()"
+                  moduleName = "OlwaTrack"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/av_zhelanov/Documents/OlwaTrack/OlwaTrack/TrackEditModule/TrackEditViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "97"
+                  endingLineNumber = "97"
+                  offsetFromSymbolStart = "32">
+               </Location>
+               <Location
+                  uuid = "31BA48D4-0E9A-4AB6-B938-24CC8696E4DD - a6bda5bc9653811a"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "OlwaTrack.TrackEditViewController.didNextButtonTapped() -&gt; ()"
+                  moduleName = "OlwaTrack"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/av_zhelanov/Documents/OlwaTrack/OlwaTrack/TrackEditModule/TrackEditViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "86"
+                  endingLineNumber = "86"
+                  offsetFromSymbolStart = "32">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "27CA6790-B488-4300-99AE-CE5713910D5E"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "OlwaTrack/TrackEditModule/TrackEditViewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "87"
+            endingLineNumber = "87"
+            landmarkName = "didMainButtonTapped()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

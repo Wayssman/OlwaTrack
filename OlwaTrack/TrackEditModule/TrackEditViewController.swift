@@ -22,6 +22,9 @@ final class TrackEditViewController: UIViewController {
     private var audioFile: AVAudioFile?
     private var timer: Timer?
     private var audioFileScheduleOffset: TimeInterval = 0
+    private lazy var importedTracks = {
+        (try? TrackFileService.shared.getImportedFiles()) ?? []
+    }()
     
     // MARK: Subviews
     private let hideButton = UIButton()
@@ -68,7 +71,7 @@ extension TrackEditViewController: TrackPlaybackControlsPanelDelegate {
     }
     
     func didPreviousButtonTapped() {
-        
+        playNextTrack(indexOffset: -1)
     }
     
     func didMainButtonTapped() {
@@ -80,13 +83,22 @@ extension TrackEditViewController: TrackPlaybackControlsPanelDelegate {
     }
     
     func didNextButtonTapped() {
-        
+        playNextTrack(indexOffset: 1)
     }
 }
 
 private extension TrackEditViewController {
     // MARK: Internal
     func prepareTrackFile() {
+        trackPreview.image = UIImage(data: trackFile.info.artwork ?? Data())
+        trackTitleLabel.text = trackFile.info.title ?? trackFile.fileName
+        
+        let currentTrackFileIndex = importedTracks.firstIndex(
+            where: { $0.url == trackFile.url }
+        ) ?? 0
+        playbackControlsPanel.setState(isPeviousEnabled: !(currentTrackFileIndex <= 0))
+        playbackControlsPanel.setState(isNextEnabled: !(currentTrackFileIndex >= importedTracks.count - 1))
+        
         audioEngine.reset()
         self.audioFile = trackFile.audioFile
         prepareAudioEngine()
@@ -211,6 +223,28 @@ private extension TrackEditViewController {
     func runExportActivity(url: URL) {
         let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
         present(activityViewController, animated: true)
+    }
+    
+    func playNextTrack(indexOffset: Int) {
+        do {
+            let importedTracks = try TrackFileService.shared.getImportedFiles()
+            
+            guard
+                let currentTrackPosition = importedTracks.firstIndex(
+                    where: { $0.url == trackFile.url }
+                ),
+                currentTrackPosition + indexOffset >= 0,
+                currentTrackPosition + indexOffset < importedTracks.count
+            else { return }
+            
+            let isPlayedBefore = playerNode.isPlaying
+            stopAudio()
+            trackFile = importedTracks[currentTrackPosition + indexOffset]
+            prepareTrackFile()
+            if isPlayedBefore { playAudio() }
+        } catch {
+            
+        }
     }
     
     // MARK: Player
@@ -382,7 +416,6 @@ private extension TrackEditViewController {
         view.addSubview(exportButton)
         
         // Track Preview
-        trackPreview.image = UIImage(data: trackFile.info.artwork ?? Data())
         trackPreview.contentMode = .scaleAspectFit
         trackPreview.layer.cornerRadius = 8
         trackPreview.layer.masksToBounds = true
@@ -392,7 +425,6 @@ private extension TrackEditViewController {
         view.addSubview(trackPreview)
         
         // Track Title Label
-        trackTitleLabel.text = trackFile.info.title ?? trackFile.fileName
         trackTitleLabel.font = .systemFont(ofSize: 20, weight: .medium)
         trackTitleLabel.textColor = UIColor("#3A3A3C")
         trackTitleLabel.textAlignment = .left
