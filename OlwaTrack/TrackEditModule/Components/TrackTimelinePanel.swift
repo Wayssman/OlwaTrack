@@ -12,6 +12,7 @@ final class TrackTimelinePanel: UIView {
     let maxWavesCount = 3
     let startWaveDiametr: CGFloat = 10
     let endWaveDiametr: CGFloat = 300
+    let maxTapsTimeIntervalsCount = 20
     
     // MARK: Callbacks
     var currentTimeDidChange: ((TimeInterval) -> Void)?
@@ -19,6 +20,9 @@ final class TrackTimelinePanel: UIView {
     // MARK: Properties
     private var lengthInSeconds: TimeInterval = 0
     private var currentTimeInSeconds: TimeInterval = 0
+    private var lastTapDate: Date?
+    private var tapsTimeIntervals: [TimeInterval] = []
+    private var timer: Timer?
     
     // MARK: Subviews
     private let tapHintLabel = UILabel()
@@ -37,10 +41,15 @@ final class TrackTimelinePanel: UIView {
         setup()
         layout()
         preserveAnimationSublayers()
+        startTimer()
     }
     
     required init?(coder: NSCoder) {
         fatalError()
+    }
+    
+    deinit {
+        stopTimer()
     }
     
     // MARK: Interface
@@ -64,6 +73,8 @@ private extension TrackTimelinePanel {
     @objc private func didTap(_ sender: UITapGestureRecognizer? = nil) {
         guard let point = sender?.location(in: self) else { return }
         launchTouchAnimation(point)
+        calculateBpm()
+        startTimer()
     }
     
     // MARK: Helpers
@@ -114,6 +125,38 @@ private extension TrackTimelinePanel {
             width: diameter,
             height: diameter
         )
+    }
+    
+    func calculateBpm() {
+        guard let lastTapDate = self.lastTapDate else {
+            lastTapDate = Date()
+            return
+        }
+        
+        let currentTapDate = Date()
+        let timeInterval = currentTapDate.timeIntervalSince(lastTapDate)  // Seconds for 1 beat
+        if tapsTimeIntervals.count >= maxTapsTimeIntervalsCount { tapsTimeIntervals.removeFirst() }
+        tapsTimeIntervals.append(timeInterval)
+        let averageTimeInterval = tapsTimeIntervals.reduce(0, +) / Double(tapsTimeIntervals.count)
+        
+        let oneMinuteBeats = averageTimeInterval.isZero ? .zero : (60 / averageTimeInterval)
+        self.bpmLabel.text = "\(Int(oneMinuteBeats))"
+        
+        self.lastTapDate = currentTapDate
+    }
+    
+    func startTimer() {
+        stopTimer()
+        timer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true, block: { _ in
+            self.lastTapDate = nil
+            self.tapsTimeIntervals.removeAll()
+            self.bpmLabel.text = "0"
+        })
+    }
+    
+    func stopTimer() {
+        timer?.invalidate()
+        timer = nil
     }
     
     // MARK: Layout
@@ -168,7 +211,7 @@ private extension TrackTimelinePanel {
         addSubview(bpmHintLabel)
         
         // Bpm Label
-        bpmLabel.text = "128"
+        bpmLabel.text = "0"
         bpmLabel.font = .systemFont(ofSize: 22, weight: .medium)
         bpmLabel.textColor = UIColor("#3A3A3C")
         bpmLabel.textAlignment = .center
