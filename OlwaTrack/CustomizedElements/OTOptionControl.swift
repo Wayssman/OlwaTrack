@@ -15,10 +15,16 @@ final class OTOptionControl: UIControl {
     let handleRadius: CGFloat = 8
     let lineWidth: CGFloat = 4
     
+    // MARK: Constraints
+    private var valueLabelLeadingOffset: NSLayoutConstraint!
+    
     // MARK: Properties
+    private var minValue: Float = 0
     private var maxValue: Float = 1
     private var value: Float = 1 {
         didSet {
+            updateValueLabelPosition()
+            valueLabel.text = String(format: "%.1f", value) + "x"
             valueDidChange?(value)
         }
     }
@@ -26,6 +32,9 @@ final class OTOptionControl: UIControl {
     
     // MARK: Sublayers
     let handleLayer = CAShapeLayer()
+    
+    // MARK: Subviews
+    let valueLabel = UILabel()
     
     // MARK: Initializers
     override init(frame: CGRect) {
@@ -38,6 +47,12 @@ final class OTOptionControl: UIControl {
     }
     
     // MARK: Lifecycle
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        updateValueLabelPosition()
+    }
+    
     override func draw(_ rect: CGRect) {
         super.draw(rect)
         
@@ -46,7 +61,8 @@ final class OTOptionControl: UIControl {
     }
     
     // MARK: Configuration
-    func configure(initialValue: Float, maxValue: Float) {
+    func configure(initialValue: Float, minValue: Float, maxValue: Float) {
+        self.minValue = minValue
         self.maxValue = maxValue
         self.value = initialValue
         setNeedsDisplay()
@@ -58,9 +74,10 @@ extension OTOptionControl {
         let pointInView = touch.location(in: self)
         let pathLength = bounds.width - lineWidth
         let xPosTouch = pointInView.x
-        let fraction = Float(xPosTouch / pathLength) * maxValue
+        let valuesRange = maxValue - minValue
+        let fraction = Float(xPosTouch / pathLength) * valuesRange
         
-        valueDifference = fraction - value
+        valueDifference = fraction - value + minValue
         return true
     }
     
@@ -68,9 +85,10 @@ extension OTOptionControl {
         let pointInView = touch.location(in: self)
         let pathLength = bounds.width - lineWidth
         let xPosTouch = pointInView.x
-        let fraction = Float(xPosTouch / pathLength) * maxValue
+        let valuesRange = maxValue - minValue
+        let fraction = Float(xPosTouch / pathLength) * valuesRange + minValue
         
-        value = max(0, min(maxValue, fraction - valueDifference))
+        value = max(minValue, min(maxValue, fraction - valueDifference))
         setNeedsDisplay()
         return true
     }
@@ -85,10 +103,32 @@ extension OTOptionControl {
 }
 
 private extension OTOptionControl {
+    // MARK: Helpers
+    func updateValueLabelPosition() {
+        guard !maxValue.isZero else { return }
+        let valuesRange = maxValue - minValue
+        let valueFraction = CGFloat(value / valuesRange - minValue)
+        valueLabelLeadingOffset.constant = bounds.width * valueFraction
+    }
+    
     // MARK: Setup
     func setup() {
         // View
         backgroundColor = .clear
+        
+        // Value Label
+        valueLabel.textColor = UIColor("#3A3A3C")?.withAlphaComponent(0.5)
+        valueLabel.textAlignment = .center
+        valueLabel.numberOfLines = 1
+        valueLabel.font = .systemFont(ofSize: 12, weight: .regular)
+        valueLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        addSubview(valueLabel)
+        valueLabelLeadingOffset = valueLabel.centerXAnchor.constraint(equalTo: leadingAnchor, constant: 0)
+        NSLayoutConstraint.activate([
+            valueLabelLeadingOffset,
+            valueLabel.bottomAnchor.constraint(equalTo: centerYAnchor, constant: -9)
+        ])
         
         // Handle Layer
         handleLayer.shadowColor = UIColor.black.cgColor
@@ -114,7 +154,8 @@ private extension OTOptionControl {
     
     private func drawValueLine(_ rect: CGRect) {
         let color = UIColor("#BF6437") ?? .systemBlue
-        let endPosition = (rect.width - lineWidth) * CGFloat(value / maxValue)
+        let valuesRange = maxValue - minValue
+        let endPosition = (rect.width - lineWidth) * CGFloat((value - minValue) / valuesRange)
         
         let path = UIBezierPath()
         path.move(to: .init(x: rect.minX + lineWidth / 2, y: rect.midY))
