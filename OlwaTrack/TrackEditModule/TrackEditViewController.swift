@@ -22,6 +22,14 @@ final class TrackEditViewController: UIViewController {
     private var audioFile: AVAudioFile?
     private var timer: Timer?
     private var audioFileScheduleOffset: TimeInterval = 0
+    private var isRepeatEnabled: Bool {
+        get {
+            (UserConfigurationService.shared.get(.trackEditRepeat) as? Bool) ?? false
+        }
+        set {
+            UserConfigurationService.shared.set(newValue, for: .trackEditRepeat)
+        }
+    }
     private lazy var importedTracks = {
         (try? TrackFileService.shared.getImportedFiles()) ?? []
     }()
@@ -67,7 +75,8 @@ final class TrackEditViewController: UIViewController {
 // MARK: - TrackPlaybackControlsPanelDelegate
 extension TrackEditViewController: TrackPlaybackControlsPanelDelegate {
     func didRepeatButtonTapped() {
-        
+        isRepeatEnabled.toggle()
+        playbackControlsPanel.setState(isRepeatEnabled: isRepeatEnabled)
     }
     
     func didPreviousButtonTapped() {
@@ -436,6 +445,9 @@ private extension TrackEditViewController {
         // Playback Controls Panel
         playbackControlsPanel.delegate = self
         playbackControlsPanel.translatesAutoresizingMaskIntoConstraints = false
+        playbackControlsPanel.setState(
+            isRepeatEnabled: self.isRepeatEnabled
+        )
         view.addSubview(playbackControlsPanel)
         
         // Mixing Container

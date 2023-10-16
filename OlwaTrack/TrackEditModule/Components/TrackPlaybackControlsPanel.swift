@@ -50,6 +50,10 @@ final class TrackPlaybackControlsPanel: UIView {
     func setState(isNextEnabled: Bool) {
         nextButton.isEnabled = isNextEnabled
     }
+    
+    func setState(isRepeatEnabled: Bool) {
+        repeatButton.tintColor = isRepeatEnabled ? UIColor("#BF6437") : UIColor("#3A3A3C")?.withAlphaComponent(0.5)
+    }
 }
 
 private extension TrackPlaybackControlsPanel {
@@ -92,13 +96,14 @@ private extension TrackPlaybackControlsPanel {
         addSubview(playerButtonsStack)
         
         // Repeat Button
+        let isRepeatEnabled = (UserConfigurationService.shared.get(.trackEditRepeat) as? Bool) ?? false
         let repeatImageConfiguration = UIImage.SymbolConfiguration(pointSize: 20, weight: .medium)
         let repeatImage = UIImage(
             systemName: "repeat.1", 
             withConfiguration: repeatImageConfiguration
         )?.withRenderingMode(.alwaysTemplate)
         repeatButton.setImage(repeatImage, for: [])
-        repeatButton.tintColor = UIColor("#3A3A3C")?.withAlphaComponent(0.5)
+        repeatButton.tintColor = isRepeatEnabled ? UIColor("#BF6437") : UIColor("#3A3A3C")?.withAlphaComponent(0.5)
         repeatButton.adjustsImageWhenHighlighted = false
         repeatButton.addTarget(self, action: #selector(repeatButtonTapped), for: .touchUpInside)
         

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		705621492A435C190032CD91 /* OTOptionControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 705621482A435C190032CD91 /* OTOptionControl.swift */; };
+		706FBD692ADD9151004705F5 /* UserConfigurationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 706FBD682ADD9151004705F5 /* UserConfigurationService.swift */; };
 		70C707E62A5363E70007A576 /* UICollectionView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70C707E52A5363E70007A576 /* UICollectionView+Extension.swift */; };
 		70C707E82A5365070007A576 /* Reusable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70C707E72A5365070007A576 /* Reusable.swift */; };
 		70C707EA2A5369E10007A576 /* MixingContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70C707E92A5369E10007A576 /* MixingContainer.swift */; };
@@ -35,6 +36,7 @@
 
 /* Begin PBXFileReference section */
 		705621482A435C190032CD91 /* OTOptionControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTOptionControl.swift; sourceTree = "<group>"; };
+		706FBD682ADD9151004705F5 /* UserConfigurationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserConfigurationService.swift; sourceTree = "<group>"; };
 		70C707E52A5363E70007A576 /* UICollectionView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionView+Extension.swift"; sourceTree = "<group>"; };
 		70C707E72A5365070007A576 /* Reusable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reusable.swift; sourceTree = "<group>"; };
 		70C707E92A5369E10007A576 /* MixingContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MixingContainer.swift; sourceTree = "<group>"; };
@@ -78,6 +80,7 @@
 			isa = PBXGroup;
 			children = (
 				70D5B8E42ABE60A900D54BC0 /* TrackFileService.swift */,
+				706FBD682ADD9151004705F5 /* UserConfigurationService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -283,6 +286,7 @@
 				705621492A435C190032CD91 /* OTOptionControl.swift in Sources */,
 				70F4C0242A282A2B004FDC5A /* FileObject.swift in Sources */,
 				70FC27252A333D3B00A6122B /* TrackEditViewController.swift in Sources */,
+				706FBD692ADD9151004705F5 /* UserConfigurationService.swift in Sources */,
 				70D5B8EA2ABE6AB100D54BC0 /* OTNavigationController.swift in Sources */,
 				70C707EE2A5375150007A576 /* TrackTimelinePanel.swift in Sources */,
 			);
