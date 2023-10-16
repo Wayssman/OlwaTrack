@@ -22,6 +22,17 @@ final class TrackEditViewController: UIViewController {
     private var audioFile: AVAudioFile?
     private var timer: Timer?
     private var audioFileScheduleOffset: TimeInterval = 0
+    private var isRepeatEnabled: Bool {
+        get {
+            (UserConfigurationService.shared.get(.trackEditRepeat) as? Bool) ?? false
+        }
+        set {
+            UserConfigurationService.shared.set(newValue, for: .trackEditRepeat)
+        }
+    }
+    private lazy var importedTracks = {
+        (try? TrackFileService.shared.getImportedFiles()) ?? []
+    }()
     
     // MARK: Subviews
     private let hideButton = UIButton()
@@ -64,11 +75,12 @@ final class TrackEditViewController: UIViewController {
 // MARK: - TrackPlaybackControlsPanelDelegate
 extension TrackEditViewController: TrackPlaybackControlsPanelDelegate {
     func didRepeatButtonTapped() {
-        
+        isRepeatEnabled.toggle()
+        playbackControlsPanel.setState(isRepeatEnabled: isRepeatEnabled)
     }
     
     func didPreviousButtonTapped() {
-        
+        playNextTrack(indexOffset: -1)
     }
     
     func didMainButtonTapped() {
@@ -80,16 +92,27 @@ extension TrackEditViewController: TrackPlaybackControlsPanelDelegate {
     }
     
     func didNextButtonTapped() {
-        
+        playNextTrack(indexOffset: 1)
     }
 }
 
 private extension TrackEditViewController {
     // MARK: Internal
     func prepareTrackFile() {
+        trackPreview.image = UIImage(data: trackFile.info.artwork ?? Data())
+        trackTitleLabel.text = trackFile.info.title ?? trackFile.fileName
+        
+        let currentTrackFileIndex = importedTracks.firstIndex(
+            where: { $0.url == trackFile.url }
+        ) ?? 0
+        playbackControlsPanel.setState(isPeviousEnabled: !(currentTrackFileIndex <= 0))
+        playbackControlsPanel.setState(isNextEnabled: !(currentTrackFileIndex >= importedTracks.count - 1))
+        
+        let wasPlayedBefore = playerNode.isPlaying
         audioEngine.reset()
         self.audioFile = trackFile.audioFile
         prepareAudioEngine()
+        if wasPlayedBefore { playerNode.play() }
     }
     
     func prepareAudioEngine() {
@@ -213,6 +236,32 @@ private extension TrackEditViewController {
         present(activityViewController, animated: true)
     }
     
+    func playNextTrack(indexOffset: Int) {
+        do {
+            let importedTracks = try TrackFileService.shared.getImportedFiles()
+            let isPlayedBefore: Bool
+            
+            if
+                let currentTrackPosition = importedTracks.firstIndex(
+                    where: { $0.url == trackFile.url }
+                ),
+                currentTrackPosition + indexOffset >= 0,
+                currentTrackPosition + indexOffset < importedTracks.count
+            {
+                trackFile = importedTracks[currentTrackPosition + indexOffset]
+                isPlayedBefore = playerNode.isPlaying
+            } else {
+                isPlayedBefore = false
+            }
+            
+            stopAudio()
+            prepareTrackFile()
+            if isPlayedBefore { playAudio() }
+        } catch {
+            
+        }
+    }
+    
     // MARK: Player
     func getPlayerTime() -> TimeInterval {
         guard
@@ -277,8 +326,11 @@ private extension TrackEditViewController {
         
         let fullPlayingTime = self.getPlayerTime() + audioFileScheduleOffset
         if fullPlayingTime > audioLengthInSeconds {
-            stopAudio()
-            prepareAudioEngine()
+            if !isRepeatEnabled {
+                playNextTrack(indexOffset: 1)
+            } else {
+                prepareTrackFile()
+            }
         } else {
             self.timelinePanel.update(currentTimeInSeconds: self.getPlayerTime() + audioFileScheduleOffset)
         }
@@ -339,11 +391,13 @@ private extension TrackEditViewController {
             guard let self = self else { return }
             
             do {
+                let wasPlayedBefore = playerNode.isPlaying
+                
                 try audioEngine.start()
                 playerNode.stop()
                 scheduleAudioFile(from: timeInSeconds)
                 audioFileScheduleOffset = timeInSeconds
-                playerNode.play()
+                if wasPlayedBefore { playerNode.play() }
             } catch {
                 
             }
@@ -382,7 +436,6 @@ private extension TrackEditViewController {
         view.addSubview(exportButton)
         
         // Track Preview
-        trackPreview.image = UIImage(data: trackFile.info.artwork ?? Data())
         trackPreview.contentMode = .scaleAspectFit
         trackPreview.layer.cornerRadius = 8
         trackPreview.layer.masksToBounds = true
@@ -392,7 +445,6 @@ private extension TrackEditViewController {
         view.addSubview(trackPreview)
         
         // Track Title Label
-        trackTitleLabel.text = trackFile.info.title ?? trackFile.fileName
         trackTitleLabel.font = .systemFont(ofSize: 20, weight: .medium)
         trackTitleLabel.textColor = UIColor("#3A3A3C")
         trackTitleLabel.textAlignment = .left
@@ -404,6 +456,9 @@ private extension TrackEditViewController {
         // Playback Controls Panel
         playbackControlsPanel.delegate = self
         playbackControlsPanel.translatesAutoresizingMaskIntoConstraints = false
+        playbackControlsPanel.setState(
+            isRepeatEnabled: self.isRepeatEnabled
+        )
         view.addSubview(playbackControlsPanel)
         
         // Mixing Container

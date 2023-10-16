@@ -73,7 +73,7 @@ private extension MixingContainer {
         addSubview(trackSpeedLabel)
         
         // Track Speed Bar
-        trackSpeedBar.configure(initialValue: 1, maxValue: 2)
+        trackSpeedBar.configure(initialValue: 1, minValue: 0.5, maxValue: 1.5)
         trackSpeedBar.valueDidChange = { [weak self] value in
             guard let self = self else { return }
             playbackSpeedValueDidChange?(value)
