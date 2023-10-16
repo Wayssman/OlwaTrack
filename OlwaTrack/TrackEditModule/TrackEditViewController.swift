@@ -108,9 +108,11 @@ private extension TrackEditViewController {
         playbackControlsPanel.setState(isPeviousEnabled: !(currentTrackFileIndex <= 0))
         playbackControlsPanel.setState(isNextEnabled: !(currentTrackFileIndex >= importedTracks.count - 1))
         
+        let wasPlayedBefore = playerNode.isPlaying
         audioEngine.reset()
         self.audioFile = trackFile.audioFile
         prepareAudioEngine()
+        if wasPlayedBefore { playerNode.play() }
     }
     
     func prepareAudioEngine() {
@@ -237,18 +239,22 @@ private extension TrackEditViewController {
     func playNextTrack(indexOffset: Int) {
         do {
             let importedTracks = try TrackFileService.shared.getImportedFiles()
+            let isPlayedBefore: Bool
             
-            guard
+            if
                 let currentTrackPosition = importedTracks.firstIndex(
                     where: { $0.url == trackFile.url }
                 ),
                 currentTrackPosition + indexOffset >= 0,
                 currentTrackPosition + indexOffset < importedTracks.count
-            else { return }
+            {
+                trackFile = importedTracks[currentTrackPosition + indexOffset]
+                isPlayedBefore = playerNode.isPlaying
+            } else {
+                isPlayedBefore = false
+            }
             
-            let isPlayedBefore = playerNode.isPlaying
             stopAudio()
-            trackFile = importedTracks[currentTrackPosition + indexOffset]
             prepareTrackFile()
             if isPlayedBefore { playAudio() }
         } catch {
@@ -320,8 +326,11 @@ private extension TrackEditViewController {
         
         let fullPlayingTime = self.getPlayerTime() + audioFileScheduleOffset
         if fullPlayingTime > audioLengthInSeconds {
-            stopAudio()
-            prepareAudioEngine()
+            if !isRepeatEnabled {
+                playNextTrack(indexOffset: 1)
+            } else {
+                prepareTrackFile()
+            }
         } else {
             self.timelinePanel.update(currentTimeInSeconds: self.getPlayerTime() + audioFileScheduleOffset)
         }
@@ -382,11 +391,13 @@ private extension TrackEditViewController {
             guard let self = self else { return }
             
             do {
+                let wasPlayedBefore = playerNode.isPlaying
+                
                 try audioEngine.start()
                 playerNode.stop()
                 scheduleAudioFile(from: timeInSeconds)
                 audioFileScheduleOffset = timeInSeconds
-                playerNode.play()
+                if wasPlayedBefore { playerNode.play() }
             } catch {
                 
             }
