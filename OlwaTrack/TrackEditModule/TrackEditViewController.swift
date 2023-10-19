@@ -42,6 +42,7 @@ final class TrackEditViewController: UIViewController {
     private let trackTitleLabel = UILabel()
     private let playbackControlsPanel = TrackPlaybackControlsPanel()
     private let mixingContainer = MixingContainer()
+    private var loaderAlert: UIAlertController?
     
     // MARK: Initializers
     init(trackFile: ImportedTrackFile) {
@@ -155,11 +156,13 @@ private extension TrackEditViewController {
     }
     
     func renderToFile() {
+        presentLoader()
         guard
             let audioFile = audioFile,
             let documentsUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
         else {
             // TODO: Write Error Handling
+            hideLoader()
             return
         }
         
@@ -198,37 +201,44 @@ private extension TrackEditViewController {
                                            
         guard let outputFile = try? AVAudioFile(forWriting: outputUrl, settings: settings, commonFormat: buffer.format.commonFormat, interleaved: buffer.format.isInterleaved) else {
             // TODO: Write Error Handling
+            hideLoader()
             return
         }
         
-        while audioEngine.manualRenderingSampleTime < audioFile.length {
-            do {
-                let frameCount = audioFile.length - audioEngine.manualRenderingSampleTime
-                let framesToRender = min(AVAudioFrameCount(frameCount), buffer.frameCapacity)
-                
-                let status = try audioEngine.renderOffline(framesToRender, to: buffer)
-                
-                switch status {
-                case .success:
-                    try outputFile.write(from: buffer)
-                case .error:
+        DispatchQueue.global().async {
+            while self.audioEngine.manualRenderingSampleTime < audioFile.length {
+                do {
+                    let frameCount = audioFile.length - self.audioEngine.manualRenderingSampleTime
+                    let framesToRender = min(AVAudioFrameCount(frameCount), buffer.frameCapacity)
+                    
+                    let status = try self.audioEngine.renderOffline(framesToRender, to: buffer)
+                    
+                    switch status {
+                    case .success:
+                        try outputFile.write(from: buffer)
+                    case .error:
+                        // TODO: Write Error Handling
+                        return
+                    default:
+                        break
+                    }
+                } catch {
                     // TODO: Write Error Handling
+                    self.hideLoader()
                     return
-                default:
-                    break
                 }
-            } catch {
-                // TODO: Write Error Handling
-                return
+            }
+            
+            DispatchQueue.main.async {
+                self.playerNode.stop()
+                self.audioEngine.stop()
+                self.audioEngine.disableManualRenderingMode()
+                
+                self.hideLoader(animated: false)
+                self.runExportActivity(url: outputUrl)
+                self.scheduleAudioFile(from: self.audioFileScheduleOffset)
             }
         }
-        
-        playerNode.stop()
-        audioEngine.stop()
-        audioEngine.disableManualRenderingMode()
-        
-        runExportActivity(url: outputUrl)
-        scheduleAudioFile(from: audioFileScheduleOffset)
     }
     
     func runExportActivity(url: URL) {
@@ -343,6 +353,34 @@ private extension TrackEditViewController {
     
     @objc func hideTapped() {
         dismiss(animated: true)
+    }
+    
+    // MARK: Helpers
+    func presentLoader() {
+        hideLoader(animated: false)
+        
+        let alertController = UIAlertController(title: nil, message: "", preferredStyle: .alert)
+        let activityIndicator = UIActivityIndicatorView(style: .large)
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        activityIndicator.isUserInteractionEnabled = false
+        activityIndicator.color = UIColor("#BF6437")
+        activityIndicator.startAnimating()
+        
+        alertController.view.addSubview(activityIndicator)
+        NSLayoutConstraint.activate([
+            alertController.view.heightAnchor.constraint(equalToConstant: 100),
+            alertController.view.widthAnchor.constraint(equalToConstant: 100),
+            activityIndicator.centerXAnchor.constraint(equalTo: alertController.view.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: alertController.view.centerYAnchor)
+        ])
+        
+        loaderAlert = alertController
+        present(alertController, animated: true)
+    }
+    
+    func hideLoader(animated: Bool = true) {
+        loaderAlert?.dismiss(animated: animated)
+        loaderAlert = nil
     }
     
     // MARK: Layout

@@ -56,6 +56,10 @@ final class TrackTimelineControl: UIControl {
         self.value = CGFloat(value)
         setNeedsDisplay()
     }
+    
+    func checkPointOnHandle(_ point: CGPoint) -> Bool {
+        return handleLayer.path?.contains(point) ?? false
+    }
 }
 
 // MARK: - Tracking

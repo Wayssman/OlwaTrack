@@ -71,7 +71,10 @@ final class TrackTimelinePanel: UIView {
 private extension TrackTimelinePanel {
     // MARK: User Interactivity
     @objc private func didTap(_ sender: UITapGestureRecognizer? = nil) {
-        guard let point = sender?.location(in: self) else { return }
+        guard 
+            let point = sender?.location(in: self),
+            !timeline.checkPointOnHandle(self.convert(point, to: timeline))
+        else { return }
         launchTouchAnimation(point)
         calculateBpm()
         startTimer()
@@ -223,8 +226,11 @@ private extension TrackTimelinePanel {
         // Timeline
         timeline.valueDidChange = { [weak self] value in
             guard let self = self else { return }
-            self.currentTimeInSeconds = self.lengthInSeconds * Double(value)
-            self.currentTimeDidChange?(self.currentTimeInSeconds)
+            
+            currentTimeInSeconds = lengthInSeconds * Double(value)
+            currentTimeDidChange?(currentTimeInSeconds)
+            let timeRemains = lengthInSeconds - currentTimeInSeconds
+            refreshTimeLabels(timeLeft: currentTimeInSeconds, timeRemains: timeRemains)
         }
         timeline.translatesAutoresizingMaskIntoConstraints = false
         addSubview(timeline)
